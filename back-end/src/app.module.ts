@@ -9,54 +9,59 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { TokenService } from './token/token.service';
-const pubSub= new RedisPubSub({
-  connection:{
-    host:process.env.REDIS_HOST||'localhost',
-    port: parseInt(process.env.REDIS_PORT||'6379',10),
-    retryStrategy:(times)=>{
-      return Math.min(times*50,2000)
-    }
-  }
-})
+import {Context} from 'graphql-ws'
+const pubSub = new RedisPubSub({
+  connection: {
+    host: process.env.REDIS_HOST || 'localhost',
+    port: parseInt(process.env.REDIS_PORT || '6379', 10),
+    retryStrategy: (times) => {
+      return Math.min(times * 50, 2000);
+    },
+  },
+});
 @Module({
   imports: [
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       imports: [ConfigModule],
       inject: [ConfigService],
       driver: ApolloDriver,
-      useFactory:async(
-        configService:ConfigService,
-        tokenService:TokenService
-      )=>{
-        return{
-          installSubscriptionHandlers:true,
-          playground:true,
-          autoSchemaFile:join(process.cwd(), 'src/schema.gql'),
-          sortSchema:true,
-          subscriptions:{
-            'graphql-ws':{
-              onConnect:(connectionParams)=>{
-                const token= tokenService.extractToken(connectionParams);
-                const user= tokenService.validateToken(token);
-                if(!token){
+      useFactory: async (
+        configService: ConfigService,
+        tokenService: TokenService,
+      ) => {
+        return {
+          installSubscriptionHandlers: true,
+          playground: true,
+          autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+          sortSchema: true,
+          subscriptions: {
+            'graphql-ws': {
+              onConnect: (context: Context<any,any>) => {
+                const { connectionParams, extra } = context; // ✅ Correct way to extract params
+
+                const token = tokenService.extractToken(connectionParams);
+                if (!token) {
                   throw new Error('Token not provided');
                 }
-                if(!user){
-                  throw new Error('Invalid token')
+
+                const user = tokenService.validateToken(token);
+                if (!user) {
+                  throw new Error('Invalid token');
                 }
-                return {user};
-    
-              }
+
+                extra.user = user; // ✅ Store user inside `extra` for access in resolvers
+              },
             },
           },
-
-        }
-      }
+          context: ({extra}) => {
+            return { user: extra.user }; // ✅ Now you can access `user` inside resolvers
+          },
+        };
+      },
     }),
     ConfigModule.forRoot({
-      isGlobal:true
-    }
-    ),
+      isGlobal: true,
+    }),
     AuthModule,
     UserModule,
   ],

@@ -4,11 +4,24 @@ import './index.css'
 import App from './App.tsx'
 import { ApolloProvider } from '@apollo/client'
 import { client } from './apolloClient.ts'
+import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import { MantineProvider } from '@mantine/core'
+import Home from './pages/home.tsx'
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Home />
+  }
+])
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ApolloProvider client={client}>
-    <App />
-    </ApolloProvider>
+    <MantineProvider>
+      <ApolloProvider client={client}>
+        <RouterProvider router={router} />
+        <App />
+      </ApolloProvider>
+    </MantineProvider>
   </StrictMode>,
 )

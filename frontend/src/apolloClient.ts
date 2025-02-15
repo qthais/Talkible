@@ -40,11 +40,16 @@ const maxRetry = 3;
 const wsLink = new GraphQLWsLink(
   createClient({
     url: "ws://localhost:3000/graphql",
-    connectionParams:()=> ({
+    connectionParams: () => ({
       Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
     }),
     onNonLazyError: (error) => {
       console.error("GraphQL WebSocket Error:", error);
+    },
+    on: {
+      connected: () => console.log("✅ WebSocket connected"),
+      error: (err) => console.error("❌ WebSocket error", err),
+      closed: () => console.log("🔴 WebSocket closed"),
     },
   })
 );
