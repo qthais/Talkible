@@ -9,7 +9,7 @@ function App() {
     <>
     <MantineProvider>
     <Card>
-      <Text fs={'italic'}>hallo</Text>
+      <Text italic>hallo</Text>
     </Card>
     </MantineProvider>
     </>
