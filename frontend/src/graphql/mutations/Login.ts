@@ -6,7 +6,7 @@ export const LOGIN_USER=gql`
                 email
                 id
                 fullname
-                avatarUr
+                avatarUrl
             }
         }
     }

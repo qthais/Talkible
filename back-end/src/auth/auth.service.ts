@@ -86,6 +86,7 @@ export class AuthService {
         email:registerDto.email
       }
     })
+    console.log('Create successfully!',user)
     return this.issueToken(user,res)
   }
   async login(loginDto:LoginDto,res:Response){

@@ -32,6 +32,7 @@ const pubSub = new RedisPubSub({
         return {
           installSubscriptionHandlers: true,
           playground: true,
+          debug:true,
           autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
           sortSchema: true,
           subscriptions: {
@@ -53,8 +54,8 @@ const pubSub = new RedisPubSub({
               },
             },
           },
-          context: ({extra}) => {
-            return { user: extra.user }; // ✅ Now you can access `user` inside resolvers
+          context: ({req,res,extra}) => {
+            return { req,res,extra }; // ✅ Now you can access `user` inside resolvers
           },
         };
       },

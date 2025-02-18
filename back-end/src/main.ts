@@ -27,6 +27,7 @@ async function bootstrap() {
       whitelist:true,
       transform:true,
       exceptionFactory:(errors)=>{
+        console.log(errors)
         const formattedErrors= errors.reduce((acc,err)=>{
           acc[err.property]=Object.values(err.constraints).join(
             ', ',
