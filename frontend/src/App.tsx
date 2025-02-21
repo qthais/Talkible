@@ -1,15 +1,14 @@
-import { useState } from 'react'
+
 import './App.css'
 import { Card, MantineProvider, Text } from '@mantine/core'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
     <MantineProvider>
     <Card>
-      <Text italic>hallo</Text>
+      <Text className='text-red-600 text-3xl !important' italic>hallo</Text>
     </Card>
     </MantineProvider>
     </>

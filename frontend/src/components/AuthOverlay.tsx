@@ -7,7 +7,6 @@ import { useMutation } from '@apollo/client'
 import { isEmail, useForm } from '@mantine/form'
 import { REGISTER_USER } from '../graphql/mutations/Register'
 import { LOGIN_USER } from '../graphql/mutations/Login'
-
 function AuthOverlay() {
   const isLoginModalOpen = useGeneralStore((state) => state.isLoginModalOpen)
   const toggleLoginModal = useGeneralStore((state) => state.toggleLoginModal)
@@ -67,22 +66,25 @@ function AuthOverlay() {
     }
 
     return (
-      <Paper >
-        <Text align='center' size={'xl'}>Register</Text>
-        <form onSubmit={form.onSubmit(() => {
+      <Paper radius={'md'}>
+        <Text className='italic font-medium text-xl md:text-3xl' align='center' size={'xl'}>Register</Text>
+        <form className='px-4' onSubmit={form.onSubmit(() => {
           handleRegister()
         })}>
           <Grid mt={20}>
-            <Col span={12} md={6}>
+            <Col span={12} >
               <TextInput
+                radius={'md'}
+                className='focus:ring'
                 label='Fullname'
                 placeholder='Choose a fullname'
                 {...form.getInputProps('fullname')}
                 error={form.errors.fullname || (errors?.fullname as string)}
               />
             </Col>
-            <Col span={12} md={6}>
+            <Col span={12} >
               <TextInput
+                radius={'md'}
                 autoComplete='off'
                 label='Email'
                 placeholder='Enter your email'
@@ -90,8 +92,9 @@ function AuthOverlay() {
                 error={form.errors.email || (errors?.email as string)}
               />
             </Col>
-            <Col span={12} md={6}>
+            <Col span={12} >
               <TextInput
+                radius={'md'}
                 label='Password'
                 type='password'
                 placeholder='Enter your password'
@@ -99,8 +102,9 @@ function AuthOverlay() {
                 error={form.errors.password || (errors?.password as string)}
               />
             </Col>
-            <Col span={12} md={6}>
+            <Col span={12} >
               <TextInput
+                radius={'md'}
                 label='Confirm password'
                 type='password'
                 placeholder='Confirm your password'
@@ -109,49 +113,55 @@ function AuthOverlay() {
               />
             </Col>
             <Col span={12}>
-              <Button variant='link' onClick={toggleForm} pl={0}>
-                Already registered? Login here
+              <Button variant='link' className='italic' onClick={toggleForm} pl={0}>
+                Already registered?&nbsp; <span className='text-sky-600'>Login</span>
               </Button>
             </Col>
           </Grid>
-          <Group>
-            <Button variant='outline' color='blue' type='submit' disabled={loading}>Register</Button>
-            <Button variant='outline' color='red'>Cancel</Button>
+          <Group position='right' className='mt-4'>
+            <Button
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+              variant='outline' color='blue'
+              type='submit'
+              disabled={loading}>
+              Register
+            </Button>
+            <Button className='bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition' variant='outline' color='red'>Cancel</Button>
           </Group>
         </form>
       </Paper>
     )
   }
   const Login = () => {
-    const [loginUser,{loading,error,data}]=useMutation(LOGIN_USER)
-    const setUser= useUserStore((state)=>state.setUser)
-    const [errors,setErrors]=useState<GraphQLErrorExtensions>({})
-    const [invalidCredentials, setInvalidCredentials]=useState('')
-    const form= useForm({
-      initialValues:{
-        email:'',
-        password:'',
+    const [loginUser, { loading, error, data }] = useMutation(LOGIN_USER)
+    const setUser = useUserStore((state) => state.setUser)
+    const [errors, setErrors] = useState<GraphQLErrorExtensions>({})
+    const [invalidCredentials, setInvalidCredentials] = useState('')
+    const form = useForm({
+      initialValues: {
+        email: '',
+        password: '',
       },
-      validate:{
+      validate: {
         email: (value: string) => (value.includes("@") ? null : 'Invalid email!'),
         password: (value: string) =>
           value.trim().length >= 3 ? null : 'Password must be at least 3 characters',
       }
     })
-    const handleLogin=async()=>{
+    const handleLogin = async () => {
       await loginUser({
-        variables:{
-          email:form.values.email,
-          password:form.values.password,
+        variables: {
+          email: form.values.email,
+          password: form.values.password,
         },
-        onCompleted:(data)=>{
+        onCompleted: (data) => {
           setErrors({})
-          if(data?.login.user){
+          if (data?.login.user) {
             setUser({
               id: data?.login.user.id,
               email: data?.login.user.email,
               fullname: data?.login.user.fullname,
-              avatarUrl:data?.login.user.avatarUrl
+              avatarUrl: data?.login.user.avatarUrl
             })
             toggleLoginModal()
           }
@@ -159,7 +169,7 @@ function AuthOverlay() {
       }).catch((err) => {
         console.log(err.graphQLErrors, "ERROR")
         setErrors(err.graphQLErrors[0].GraphQLErrorExtensions)
-        if(err.graphQLErrors[0].GraphQLErrorExtensions.invalidCredentials){
+        if (err.graphQLErrors[0].GraphQLErrorExtensions.invalidCredentials) {
           setInvalidCredentials(err.graphQLErrors[0].GraphQLErrorExtensions.invalidCredentials)
         }
         useGeneralStore.setState({ isLoginModalOpen: true })
@@ -167,18 +177,20 @@ function AuthOverlay() {
     }
 
     return (
-      <Paper>
-        <Text align="center" size="xl">
+      <Paper radius={'md'}>
+        <Text className='italic font-medium text-xl md:text-3xl' align="center" size="xl">
           Login
         </Text>
-        <form
+        <form className='px-4'
           onSubmit={form.onSubmit(() => {
             handleLogin()
           })}
         >
           <Grid style={{ marginTop: 20 }}>
-            <Col span={12} md={6}>
+            <Col span={12} >
               <TextInput
+                radius={'md'}
+                className='focus:ring'
                 autoComplete="off"
                 label="Email"
                 placeholder="Enter your email"
@@ -186,8 +198,9 @@ function AuthOverlay() {
                 error={form.errors.email || (errors?.email as string)}
               />
             </Col>
-            <Col span={12} md={6}>
+            <Col span={12} >
               <TextInput
+                radius={'md'}
                 autoComplete="off"
                 label="Password"
                 type="password"
@@ -197,18 +210,19 @@ function AuthOverlay() {
               />
             </Col>
             {/* Not registered yet? then render register component. use something like a text, not a button */}
-            <Col span={12} md={6}>
+            <Col span={12} >
               <Text color="red">{invalidCredentials}</Text>
             </Col>
             <Col span={12}>
               <Button pl={0} variant="link" onClick={toggleForm}>
-                Not registered yet? Register here
+                Not registered yet?&nbsp; <span className='text-sky-600'>Register</span>
               </Button>
             </Col>
           </Grid>
           {/* buttons: login or cancel */}
-          <Group position="left" style={{ marginTop: 20 }}>
+          <Group position="right" className='mt-4' style={{ marginTop: 20 }}>
             <Button
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
               variant="outline"
               color="blue"
               type="submit"
@@ -216,7 +230,11 @@ function AuthOverlay() {
             >
               Login
             </Button>
-            <Button variant="outline" color="red" onClick={toggleLoginModal}>
+            <Button
+            className='bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition'
+             variant="outline" 
+             color="red" 
+             onClick={toggleLoginModal}>
               Cancel
             </Button>
           </Group>
