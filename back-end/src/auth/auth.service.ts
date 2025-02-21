@@ -66,7 +66,7 @@ export class AuthService {
     const user=await this.prisma.user.findUnique({
         where:{email:loginDto.email}
     })
-    if(user && bcrypt.compare(loginDto.password,user.password)){
+    if(user && await bcrypt.compare(loginDto.password,user.password)){
         return user;
     }
     return null

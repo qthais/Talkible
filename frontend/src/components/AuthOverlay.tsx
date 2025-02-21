@@ -168,9 +168,9 @@ function AuthOverlay() {
         }
       }).catch((err) => {
         console.log(err.graphQLErrors, "ERROR")
-        setErrors(err.graphQLErrors[0].GraphQLErrorExtensions)
-        if (err.graphQLErrors[0].GraphQLErrorExtensions.invalidCredentials) {
-          setInvalidCredentials(err.graphQLErrors[0].GraphQLErrorExtensions.invalidCredentials)
+        setErrors(err.graphQLErrors[0].extensions)
+        if (err.graphQLErrors[0].extensions.invalidCredentials) {
+          setInvalidCredentials(err.graphQLErrors[0].extensions.invalidCredentials)
         }
         useGeneralStore.setState({ isLoginModalOpen: true })
       })
@@ -243,7 +243,7 @@ function AuthOverlay() {
     )
   }
   return (
-    <Modal centered opened={isLoginModalOpen} onClose={toggleLoginModal} >
+    <Modal style={{borderRadius:100}} centered opened={isLoginModalOpen} onClose={toggleLoginModal} >
       {isRegister ? <Register /> : <Login />}
     </Modal>
   )

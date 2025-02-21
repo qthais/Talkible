@@ -1,15 +1,15 @@
 
 import AuthOverlay from '../components/AuthOverlay'
-import ProtectRoutes from '../components/ProtectRoutes'
+import ProfileSetting from '../components/ProfileSetting'
 import Sidebar from '../components/Sidebar'
 import MainLayout from '../layouts/MainLayout'
 function Home() {
   return (
     <MainLayout>
       <>
-      <AuthOverlay/>
+        <AuthOverlay />
+        <ProfileSetting/>
         <Sidebar />
-        HomePage
       </>
     </MainLayout>
   )
