@@ -37,6 +37,7 @@ function ProfileSetting() {
         }
     })
     const handleSave=async()=>{
+        if(form.validate().hasErrors) return
         try{
             const result =await updateProfile()
             console.log(result)
@@ -50,7 +51,7 @@ function ProfileSetting() {
             opened={isProfileSettingModalOpen}
             onClose={toggleProfileSettingModal}
             title="Profile Settings">
-            <form onSubmit={form.onSubmit(() => updateProfile())}>
+            <form onSubmit={form.onSubmit(() => handleSave())}>
                 <Group pos="relative" w={100} h={100} style={{ cursor: "pointer" }} onClick={() => fileInputRef.current?.click()}>
                     <Avatar
                         src={imagePreview || profileImage || null}
@@ -88,6 +89,7 @@ function ProfileSetting() {
                     onChange={(event) => {
                         form.setFieldValue("fullname", event.currentTarget.value)
                     }}
+                    error={form.errors.fullname}
                 />
                 <Flex gap={'md'} mt={'sm'}>
                     <Button onClick={handleSave}>

@@ -61,9 +61,15 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
         refreshToken(client)
           .then((token) => {
             console.log("token", token);
-            operation.setContext((previousContext) => ({
-              headers: [...previousContext.headers, { authorization: token }],
-            }));
+            operation.setContext((previousContext) => {
+              const existingHeaders = previousContext.headers || {};
+              return {
+                headers: {
+                  ...existingHeaders,
+                  authorization: token,
+                },
+              };
+            });
             const forward$ = forward(operation);
             forward$.subscribe(observer);
             //observer is the listener, listening every errors from the forward$

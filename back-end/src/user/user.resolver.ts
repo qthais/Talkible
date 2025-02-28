@@ -31,7 +31,7 @@ export class UserResolver {
     private async storeImageAndGetUrl(file:FileUpload){
         const {createReadStream, filename}= file;
         const uniqueFilename= `${uuidv4()}_${(filename)}`
-        const imagePath=join(process.cwd(),'public',uniqueFilename)
+        const imagePath=join(process.cwd(),'public','images',uniqueFilename)
         const imageUrl = `${process.env.APP_URL}/${uniqueFilename}`
         const readStream= createReadStream()
         readStream.pipe(createWriteStream(imagePath));
