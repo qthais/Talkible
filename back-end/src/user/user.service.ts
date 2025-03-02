@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { User } from './user.type';
-import path from 'path';
-import fs from 'fs'
+import { join } from 'path';
+import * as fs from 'fs'
 
 @Injectable()
 export class UserService {
@@ -24,7 +24,7 @@ export class UserService {
             //delete old avatar of user and replace
             if(oldUser.avatarUrl){
                 const imageName=oldUser.avatarUrl.split('/').pop()
-                const imagePath=path.join(__dirname,'..','..','publics','images',imageName)
+                const imagePath=join(__dirname,'..','..','publics','images',imageName)
                 if(fs.existsSync(imagePath)){
                     fs.unlinkSync(imagePath)
                 }
