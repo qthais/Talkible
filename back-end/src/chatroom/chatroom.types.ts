@@ -13,7 +13,7 @@ export class Chatroom{
     updatedAt?:Date
     @Field(()=>[User],{nullable:true})
     users:User[]
-    @Field(()=>[ID],{nullable:true})
+    @Field(()=>[Message],{nullable:true})
     messages?:Message[];
 }
 
