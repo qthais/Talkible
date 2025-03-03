@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 @Module({
-  providers: [UserService, UserResolver,PrismaService,ConfigService,JwtService]
+  providers: [UserService, UserResolver,PrismaService,ConfigService,JwtService],
+  exports:[UserService]
 })
 export class UserModule {}

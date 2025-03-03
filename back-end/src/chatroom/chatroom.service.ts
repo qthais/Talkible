@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createWriteStream } from 'fs';
-import { resolve } from 'path';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
@@ -128,5 +127,29 @@ export class ChatroomService {
             stream.on('error',reject)
         })
         return imagePath
+    }
+    async getMessagesForChatroom(chatroomId:number){
+        return await this.prisma.message.findMany({
+            where:{id:chatroomId},
+            include:{
+                chatroom:{
+                    include:{
+                        users:{
+                            orderBy:{
+                                createdAt:'asc'
+                            }
+                        }
+                    }
+                },
+                user:true
+            }
+        })
+    }
+    async deleteChatroom(chatroomId:number){
+        return this.prisma.chatroom.delete({
+            where:{
+                id:chatroomId
+            }
+        })
     }
 }
