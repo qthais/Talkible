@@ -32,7 +32,7 @@ export class AuthService {
     if(!userExists){
         throw new BadRequestException('User no longer exists')
     }
-    const expiresIn=15000
+    const expiresIn=24*60*1000
     const expiration= Math.floor(Date.now()/1000)+expiresIn;
     const accessToken=this.jwtService.sign(
         {...payload,exp:expiration},
@@ -49,7 +49,7 @@ export class AuthService {
         payload,
         {
             secret:this.configService.get<string>('ACCESS_TOKEN_SECRET'),
-            expiresIn:'150sec',
+            expiresIn:'1d',
         }
     )
     const refreshToken=this.jwtService.sign(payload,{

@@ -1,12 +1,14 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useGeneralStore } from '../stores/generalStore'
-import { Button, Modal, MultiSelect, Stepper, TextInput } from '@mantine/core'
+import { Button, Group,  Modal, MultiSelect,  Stepper,  TextInput } from '@mantine/core'
 import { useMutation, useQuery } from '@apollo/client'
-import { AddUsersToChatroomDocument, AddUsersToChatroomMutation, Chatroom, CreateChatroomMutation, SearchUsersDocument, SearchUsersQuery } from '../gql/graphql'
+import {  AddUsersToChatroomMutation, Chatroom, CreateChatroomMutation, SearchUsersQuery } from '../gql/graphql'
 import { CREATE_CHATROOM } from '../graphql/mutations/createChatroom'
 import { useForm } from '@mantine/form'
 import { SEARCH_USER } from '../graphql/queries/SearchUser.s'
 import { ADD_USERS_TO_CHATROOM } from '../graphql/mutations/AddUsersToChatroom'
+import { IconPlus } from '@tabler/icons-react'
+
 
 function AddChatroom() {
     const [active, setActive] = useState(1)
@@ -42,11 +44,12 @@ function AddChatroom() {
                 handleStepChange(active + 1)
             },
             onError: (err) => {
+                console.log(err)
                 form.setErrors({
                     name: err.graphQLErrors[0].extensions?.name as string,
                 })
             },
-            refetchQueries: ['GetChatroomsForUser']
+            refetchQueries: ['getChatroomsForUser']
         })
     }
     const [searchTerm, setSearchTerm] = useState('')
@@ -54,7 +57,7 @@ function AddChatroom() {
         variables: { fullname: searchTerm }
     })
     const [addUsersToChatroom, { loading: loadingAddUsers }] = useMutation<AddUsersToChatroomMutation>(ADD_USERS_TO_CHATROOM, {
-        refetchQueries: ['GetChatroomsForUser'],
+        refetchQueries: ['getChatroomsForUser'],
     })
     const [selectedUsers, setSelectedUsers] = useState<string[]>([])
     const handleAddUsersToChatroom = async () => {
@@ -64,8 +67,11 @@ function AddChatroom() {
                 userIds: selectedUsers.map((userId) => parseInt(userId))
             },
             onCompleted: () => {
-                handleStepChange(active + 1)
+                handleStepChange(1)
                 toggleCreateRoomModal()
+                setSelectedUsers([])
+                setNewlyCreatedChatroom(null)
+                form.reset()
             },
             onError: (err) => {
                 form.setErrors({
@@ -93,27 +99,27 @@ function AddChatroom() {
 
     return (
         <Modal opened={isCreateRoomModalOpen} onClose={toggleCreateRoomModal}>
-            <Stepper 
-            active={active}
-            onStepClick={setActive}
-            breakpoint={'sm'}
+            <Stepper
+                active={active}
+                onStepClick={setActive}
+                breakpoint={'sm'}
             >
                 <Stepper.Step label='First step' description='Create Chatroom'>
                     <div>Create a Chatroom</div>
                 </Stepper.Step>
                 <Stepper.Step label='Second step' description='Add members'>
-                    <form onSubmit={form.onSubmit(()=>handleCreateChatroom())}>
+                    <form onSubmit={form.onSubmit(() => handleCreateChatroom())}>
                         <TextInput
-                        placeholder='Chatroom name'
-                        label='Chatroom name'
-                        error={form.errors.name}
-                        {...form.getInputProps('name')}
+                            placeholder='Chatroom name'
+                            label='Chatroom name'
+                            error={form.errors.name}
+                            {...form.getInputProps('name')}
                         />
                         <Button mt={'md'} type='submit'>Create room</Button>
                     </form>
-                    </Stepper.Step>
-                    <Stepper.Completed>
-                        <MultiSelect
+                </Stepper.Step>
+                <Stepper.Completed>
+                    <MultiSelect
                         onSearchChange={handleSearchChange}
                         nothingFound='No users found'
                         searchable
@@ -121,10 +127,26 @@ function AddChatroom() {
                         data={selectItems}
                         label='Choose the members you want to add'
                         placeholder='Pick all the users'
-                        onChange={(values)=>setSelectedUsers(values)}
-                        />
-                    </Stepper.Completed>
+                        onChange={(values) => setSelectedUsers(values)}
+                    />
+                </Stepper.Completed>
             </Stepper>
+            <Group mt={'xl'}>
+                <Button variant='default' onClick={() => handleStepChange(active - 1)}>Back</Button>
+                {
+                    selectedUsers.length > 0 && (
+                        <Button
+                            onClick={handleAddUsersToChatroom}
+                            color='blue'
+                            leftIcon={<IconPlus />}
+                            loading={loading}
+                        >
+                            Add Users
+                        </Button>
+                    )
+                }
+            </Group>
+
         </Modal>
     )
 }
