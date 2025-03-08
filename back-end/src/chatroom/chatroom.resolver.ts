@@ -25,7 +25,7 @@ export class ChatroomResolver {
   ) {
     this.pubSub = new PubSub();
   }
-  @Subscription((returns) => Message, {
+  @Subscription(() => Message, {
     nullable: true,
     resolve: (value) => value.newMessage,
   })
@@ -98,7 +98,7 @@ export class ChatroomResolver {
     try {
       if (image) {
         imagePath = await this.chatroomService.saveImage(image);
-        const newMessage = await this.chatroomService.sendMessage(
+        newMessage = await this.chatroomService.sendMessage(
           chatroomId,
           content,
           context.req.user.sub,

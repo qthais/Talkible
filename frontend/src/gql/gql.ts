@@ -15,11 +15,14 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 type Documents = {
     "\n    mutation addUsersToChatroom($chatroomId:Float!, $userIds:[Float!]!){\n        addUsersToChatroom(chatroomId:$chatroomId,userIds:$userIds){\n            name\n            id\n        }\n    }\n": typeof types.AddUsersToChatroomDocument,
+    "\n    mutation EnterChatroom($chatroomId: Float!){\n        enterChatroom(chatroomId:$chatroomId)\n    }\n": typeof types.EnterChatroomDocument,
+    "\n    mutation LeaveChatroom($chatroomId:Float!){\n        leaveChatroom(chatroomId:$chatroomId)\n    }\n": typeof types.LeaveChatroomDocument,
     "\n    mutation LoginUser($email: String!, $password: String!){\n        login(loginInput:{email: $email, password:$password}){\n            user{\n                email\n                id\n                fullname\n                avatarUrl\n            }\n        }\n    }\n": typeof types.LoginUserDocument,
     "\n    mutation LogoutUser{\n        logout\n    }\n": typeof types.LogoutUserDocument,
     "\n    mutation RegisterUser(\n        $fullname: String!,\n        $email: String!,\n        $password: String!,\n        $confirmPassword:String!,\n    ){\n        register(\n            registerInput: {\n                fullname: $fullname,\n                email: $email,\n                password: $password,\n                confirmPassword: $confirmPassword,\n            }\n        ){\n            user{\n                id\n                fullname\n                email\n            }\n        }\n    }\n": typeof types.RegisterUserDocument,
     "\n    mutation createChatroom($name:String!){\n        createChatroom(name:$name){\n            name\n            id\n        }\n    }\n": typeof types.CreateChatroomDocument,
     "\n    mutation deleteChatroom($chatroomId:Float!){\n        deleteChatroom(chatroomId:$chatroomId)\n    }\n": typeof types.DeleteChatroomDocument,
+    "\n    mutation SendMessage($chatroomId:Float!,$content:String!,$image:Upload){\n        sendMessage(chatroomId:$chatroomId,content:$content,image:$image){\n            id\n            content\n            imageUrl\n            user{\n                id\n                fullname\n                email\n            }\n        }\n    }\n": typeof types.SendMessageDocument,
     "\n  mutation updateProfile(\n    $fullname: String!\n    $file: Upload\n  ) {\n    updateProfile(fullname: $fullname, file: $file) {\n      id\n      fullname\n      avatarUrl\n    }\n  }\n": typeof types.UpdateProfileDocument,
     "\n    query GetUserOfChatroom($chatroomId:Float!){\n        getUsersOfChatroom(chatroomId:$chatroomId){\n            id\n            fullname\n            email\n            avatarUrl\n        }\n    }\n": typeof types.GetUserOfChatroomDocument,
     "\n    query SearchUsers($fullname:String!){\n        searchUsers(fullname:$fullname){\n            id\n            fullname\n            email\n        }\n    }\n": typeof types.SearchUsersDocument,
@@ -28,11 +31,14 @@ type Documents = {
 };
 const documents: Documents = {
     "\n    mutation addUsersToChatroom($chatroomId:Float!, $userIds:[Float!]!){\n        addUsersToChatroom(chatroomId:$chatroomId,userIds:$userIds){\n            name\n            id\n        }\n    }\n": types.AddUsersToChatroomDocument,
+    "\n    mutation EnterChatroom($chatroomId: Float!){\n        enterChatroom(chatroomId:$chatroomId)\n    }\n": types.EnterChatroomDocument,
+    "\n    mutation LeaveChatroom($chatroomId:Float!){\n        leaveChatroom(chatroomId:$chatroomId)\n    }\n": types.LeaveChatroomDocument,
     "\n    mutation LoginUser($email: String!, $password: String!){\n        login(loginInput:{email: $email, password:$password}){\n            user{\n                email\n                id\n                fullname\n                avatarUrl\n            }\n        }\n    }\n": types.LoginUserDocument,
     "\n    mutation LogoutUser{\n        logout\n    }\n": types.LogoutUserDocument,
     "\n    mutation RegisterUser(\n        $fullname: String!,\n        $email: String!,\n        $password: String!,\n        $confirmPassword:String!,\n    ){\n        register(\n            registerInput: {\n                fullname: $fullname,\n                email: $email,\n                password: $password,\n                confirmPassword: $confirmPassword,\n            }\n        ){\n            user{\n                id\n                fullname\n                email\n            }\n        }\n    }\n": types.RegisterUserDocument,
     "\n    mutation createChatroom($name:String!){\n        createChatroom(name:$name){\n            name\n            id\n        }\n    }\n": types.CreateChatroomDocument,
     "\n    mutation deleteChatroom($chatroomId:Float!){\n        deleteChatroom(chatroomId:$chatroomId)\n    }\n": types.DeleteChatroomDocument,
+    "\n    mutation SendMessage($chatroomId:Float!,$content:String!,$image:Upload){\n        sendMessage(chatroomId:$chatroomId,content:$content,image:$image){\n            id\n            content\n            imageUrl\n            user{\n                id\n                fullname\n                email\n            }\n        }\n    }\n": types.SendMessageDocument,
     "\n  mutation updateProfile(\n    $fullname: String!\n    $file: Upload\n  ) {\n    updateProfile(fullname: $fullname, file: $file) {\n      id\n      fullname\n      avatarUrl\n    }\n  }\n": types.UpdateProfileDocument,
     "\n    query GetUserOfChatroom($chatroomId:Float!){\n        getUsersOfChatroom(chatroomId:$chatroomId){\n            id\n            fullname\n            email\n            avatarUrl\n        }\n    }\n": types.GetUserOfChatroomDocument,
     "\n    query SearchUsers($fullname:String!){\n        searchUsers(fullname:$fullname){\n            id\n            fullname\n            email\n        }\n    }\n": types.SearchUsersDocument,
@@ -61,6 +67,14 @@ export function graphql(source: "\n    mutation addUsersToChatroom($chatroomId:F
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n    mutation EnterChatroom($chatroomId: Float!){\n        enterChatroom(chatroomId:$chatroomId)\n    }\n"): (typeof documents)["\n    mutation EnterChatroom($chatroomId: Float!){\n        enterChatroom(chatroomId:$chatroomId)\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation LeaveChatroom($chatroomId:Float!){\n        leaveChatroom(chatroomId:$chatroomId)\n    }\n"): (typeof documents)["\n    mutation LeaveChatroom($chatroomId:Float!){\n        leaveChatroom(chatroomId:$chatroomId)\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n    mutation LoginUser($email: String!, $password: String!){\n        login(loginInput:{email: $email, password:$password}){\n            user{\n                email\n                id\n                fullname\n                avatarUrl\n            }\n        }\n    }\n"): (typeof documents)["\n    mutation LoginUser($email: String!, $password: String!){\n        login(loginInput:{email: $email, password:$password}){\n            user{\n                email\n                id\n                fullname\n                avatarUrl\n            }\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -78,6 +92,10 @@ export function graphql(source: "\n    mutation createChatroom($name:String!){\n
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    mutation deleteChatroom($chatroomId:Float!){\n        deleteChatroom(chatroomId:$chatroomId)\n    }\n"): (typeof documents)["\n    mutation deleteChatroom($chatroomId:Float!){\n        deleteChatroom(chatroomId:$chatroomId)\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation SendMessage($chatroomId:Float!,$content:String!,$image:Upload){\n        sendMessage(chatroomId:$chatroomId,content:$content,image:$image){\n            id\n            content\n            imageUrl\n            user{\n                id\n                fullname\n                email\n            }\n        }\n    }\n"): (typeof documents)["\n    mutation SendMessage($chatroomId:Float!,$content:String!,$image:Upload){\n        sendMessage(chatroomId:$chatroomId,content:$content,image:$image){\n            id\n            content\n            imageUrl\n            user{\n                id\n                fullname\n                email\n            }\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
