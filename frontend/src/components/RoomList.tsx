@@ -96,11 +96,6 @@ function RoomList() {
                           backgroundColor: theme.colors.gray[2], // Use Mantine's theme color
                         },
                       })}
-                      style={
-                        activeRoomId === parseInt(chatroom.id || '0')
-                          ? { backgroundColor: '#f0f1f1' }
-                          : undefined
-                      }
                       mih={120}
                       py={'md'}
 

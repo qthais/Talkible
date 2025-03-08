@@ -7,6 +7,7 @@ import RoomList from '../components/RoomList'
 import Sidebar from '../components/Sidebar'
 import MainLayout from '../layouts/MainLayout'
 import AddChatroom from '../components/AddChatroom'
+import JoinRoomOnWindow from '../components/JoinRoomOnWindow'
 function Home() {
   return (
     <MainLayout>
@@ -18,6 +19,7 @@ function Home() {
           <AddChatroom/>
           <Flex direction={{base:"column",sm:"row"}} w={"100vw"}>
           <RoomList/>
+          <JoinRoomOnWindow/>
           </Flex>
         </ProtectRoutes>
       </>

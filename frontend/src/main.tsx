@@ -10,8 +10,14 @@ import Home from './pages/home.tsx'
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home />
-  }
+    element: <Home />,
+    children:[
+      {
+        path:'/chatrooms/:id',
+      }
+    ]
+  },
+
 ])
 
 createRoot(document.getElementById('root')!).render(
