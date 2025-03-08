@@ -120,7 +120,7 @@ function AddChatroom() {
                 </Stepper.Step>
                 <Stepper.Completed>
                     <MultiSelect
-                        onSearchChange={handleSearchChange}
+                        onSearchChange={(value)=>{handleSearchChange(value)}}
                         nothingFound='No users found'
                         searchable
                         pb={'xl'}

@@ -54,7 +54,7 @@ function RoomList() {
       h={"100vh"}
       ml={"100px"}
     >
-      <Card shadow='md' w={"100%"} p={0}>
+      <Card radius={'lg'} w={"100%"} p={0}>
         <Flex direction={'column'} align={'start'} w={'100%'}>
           <Group position='apart' w={'100%'} style={{ width: "100%" }} mb={'md'} mt={'md'}>
             <Button onClick={toggleCreateRoomModal} variant='light' leftIcon={<IconPlus />}>
@@ -78,7 +78,7 @@ function RoomList() {
               </Flex>
               {
                 data?.getChatroomsForUser.map((chatroom) => (
-                  <Link
+                  <Link className='mx-3'
                     style={
                       {
                         transition: 'background-color 0.3s',
@@ -87,9 +87,15 @@ function RoomList() {
                     }
                     to={`/chatrooms/${chatroom.id}`}
                     key={chatroom.id}
-                    onClick={() => setActiveRoomId(parseInt(chatroom.id || '0'))}
+                    onMouseEnter={() => setActiveRoomId(parseInt(chatroom.id || '0'))}
                   >
                     <Card
+                      sx={(theme) => ({
+                        width:'100%',
+                        '&:hover': {
+                          backgroundColor: theme.colors.gray[2], // Use Mantine's theme color
+                        },
+                      })}
                       style={
                         activeRoomId === parseInt(chatroom.id || '0')
                           ? { backgroundColor: '#f0f1f1' }
@@ -97,10 +103,10 @@ function RoomList() {
                       }
                       mih={120}
                       py={'md'}
-                      withBorder
-                      shadow='md'
+
+                      radius={'lg'}
                     >
-                      <Flex justify={'space-around'}>
+                      <Flex justify={'space-between'}>
                         {chatroom.users && (
                           <Flex align={'center'}>
                             <OverlappingAvatar users={chatroom.users} />
@@ -114,16 +120,6 @@ function RoomList() {
                             w={'100%'}
                             h={'100%'}
                           >
-                            <Flex w={'100%'} h={'100%'} align={'end'} justify={'end'}>
-                              <Button
-                                p={0}
-                                variant='light'
-                                color='red'
-                                onClick={() => deleteChatroom()}
-                              >
-                                <IconX />
-                              </Button>
-                            </Flex>
                             <Flex
                               direction={'column'}
 
@@ -141,6 +137,19 @@ function RoomList() {
                           </Flex>
                         )
                         }
+                        <Flex h={'100%'} align={'end'} justify={'end'}>
+                          <Button
+                            p={0}
+                            variant='light'
+                            color='red'
+                            onClick={(e) => {
+                              e.preventDefault()
+                              deleteChatroom()
+                            }}
+                          >
+                            <IconX />
+                          </Button>
+                        </Flex>
                       </Flex>
                     </Card>
                   </Link>

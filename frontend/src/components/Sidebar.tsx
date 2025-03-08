@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import logo from '../assets/logo.png'
 import {
   Navbar,
   Center,
@@ -12,7 +13,7 @@ import {
 import {
   IconUser,
   IconLogout,
-  IconBrandMessenger,
+  IconBrandHipchat,
   IconBrandWechat,
   IconLogin
 } from "@tabler/icons-react"
@@ -111,10 +112,10 @@ function Sidebar() {
     })
   }
   return (
-    <Navbar fixed zIndex={100} w={rem(100)} p={'md'} style={{ borderRadius: "15px" }}>
+    <Navbar className='bg-gray-50' fixed zIndex={100} w={rem(100)} p={'md'} style={{ borderRadius: "15px" }}>
       <Navbar.Section>
         <Center>
-            <IconBrandMessenger size={'2.2rem'} color='blue' stroke={1.5} />
+            <img className='w-11 mt-5' src={logo} alt="" />
         </Center>
       </Navbar.Section>
       <Navbar.Section grow mt={50}>

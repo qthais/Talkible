@@ -7,7 +7,7 @@ function OverlappingAvatar({users}:{users:User[]}) {
   const remainingNames=remainingUsers.map((user)=>user.fullname).join(', ')
   return (
     <Tooltip.Group openDelay={300} closeDelay={100}>
-      <Avatar.Group spacing={'ms'}>
+      <Avatar.Group spacing={'sm'}>
         <>
         {users.slice(0,3).map((user)=>{
           return(
@@ -16,7 +16,6 @@ function OverlappingAvatar({users}:{users:User[]}) {
               src={user.avatarUrl||null}
               radius={'xl'}
               alt={user.fullname}
-              size={'lg'}
               />
             </Tooltip>
           )
