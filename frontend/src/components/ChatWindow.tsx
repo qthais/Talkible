@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useSubscription } from '@apollo/client'
 import React, { useEffect, useRef, useState } from 'react'
-import { EnterChatroomMutation, GetMessagesForChatroomQuery, GetUserOfChatroomQuery, LeaveChatroomMutation, LiveUsersInChatRoomSubscription, Message, SendMessageMutation, User, UserStartedTypingMutationMutation, UserStartedTypingSubscription, UserStoppedTypingMutationMutation, UserStoppedTypingSubscription } from '../gql/graphql'
+import { EnterChatroomMutation, GetMessagesForChatroomQuery, GetUserOfChatroomQuery, LeaveChatroomMutation, LiveUsersInChatRoomSubscription, Message, NewMessageSubscription, SendMessageMutation, User, UserStartedTypingMutationMutation, UserStartedTypingSubscription, UserStoppedTypingMutationMutation, UserStoppedTypingSubscription } from '../gql/graphql'
 import { SEND_MESSAGE } from '../graphql/mutations/sendMessages'
 import { useDropzone } from 'react-dropzone'
 import { useParams } from 'react-router-dom'
@@ -20,6 +20,7 @@ import { GET_MESSAGES_FOR_CHATROOM } from '../graphql/queries/getMessagesForChat
 import MessageBubble from './MessageBubble'
 import { IconMichelinBibGourmand } from '@tabler/icons-react'
 import { GET_CHATROOMS_FOR_USER } from '../graphql/queries/getChatroomsForUser'
+import { NEW_MESSAGE_SUBSCRIPTION } from '../graphql/subscriptions/NewMessage'
 function ChatWindow() {
   const [messageContent, setMessageContent] = useState('')
   const [sendMessage, { data: sendMessageData }] = useMutation<SendMessageMutation>(SEND_MESSAGE)
@@ -107,10 +108,11 @@ function ChatWindow() {
         setTypingUsers((prevUsers) => 
           prevUsers.filter(user => user.id !== userId)
         )
+        await userStoppedTypingMutation()
       }, 5000)
     }
   }
-  const isSmallDevice = useMediaQuery('(max-width:768px')
+  const isSmallDevice = useMediaQuery('(max-width: 768px)')
   const {
     data: liveUsersData,
     loading: liveUsersLoading,
@@ -219,11 +221,48 @@ function ChatWindow() {
       console.log(err.message)
     }
   }
+
+  const scrollToBottom=()=>{
+    if(scrollAreaRef.current){
+      const scrollElement=scrollAreaRef.current
+      scrollElement.scrollTo({
+        top:scrollElement.scrollHeight,
+        behavior:'smooth'
+      })
+    }
+  }
+  useEffect(()=>{
+    if(data?.getMessagesForChatroom){
+      const uniqueMessages=Array.from(
+        new Set(data.getMessagesForChatroom.map((m)=>m.id))
+      ).map((id)=>data.getMessagesForChatroom.find((m)=>m.id===id))
+      setMessages(uniqueMessages as Message[])
+      scrollToBottom()
+    }
+  },[data?.getMessagesForChatroom])
+  const {
+    data:dataSub,
+    loading:loadingSub,
+    error:errorSub
+  }=useSubscription<NewMessageSubscription>(NEW_MESSAGE_SUBSCRIPTION,{
+    variables:{
+      chatroomId
+    }
+  })
+  useEffect(()=>{
+    scrollToBottom()
+    if(dataSub?.newMessage){
+      const newMessage = dataSub.newMessage as Message;
+      if(!messages.find((m)=>m.id===dataSub.newMessage?.id)){
+        setMessages((prevMsgs)=>[...prevMsgs,newMessage])
+      }
+    }
+  },[dataSub?.newMessage,messages])
   return (
     <Flex
       justify={'center'}
       ml={isSmallDevice ? '100px' : '0'}
-      w={isSmallDevice ? 'calc(100vw-100px)' : '1000px'}
+      w={isSmallDevice ? 'calc(100vw - 100px)' : '1000px'}
       h={'100vh'}
     >
       {!liveUsersLoading && isUserPartOfChatroom ? (
