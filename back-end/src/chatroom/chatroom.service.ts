@@ -90,7 +90,7 @@ export class ChatroomService {
         userId:number,
         imagePath:string,
     ){
-        await this.prisma.message.create({
+        return await this.prisma.message.create({
             data:{
                 content:message,
                 imageUrl:imagePath,
@@ -130,7 +130,7 @@ export class ChatroomService {
     }
     async getMessagesForChatroom(chatroomId:number){
         return await this.prisma.message.findMany({
-            where:{id:chatroomId},
+            where:{chatroomId:chatroomId},
             include:{
                 chatroom:{
                     include:{

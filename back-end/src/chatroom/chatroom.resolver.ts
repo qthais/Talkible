@@ -99,17 +99,18 @@ export class ChatroomResolver {
     try {
       if (image) {
         imagePath = await this.chatroomService.saveImage(image);
-        newMessage = await this.chatroomService.sendMessage(
-          chatroomId,
-          content,
-          context.req.user.sub,
-          imagePath,
-        );
       }
+      newMessage = await this.chatroomService.sendMessage(
+        chatroomId,
+        content,
+        context.req.user.sub,
+        imagePath,
+      );
+      console.log(newMessage)
       const res = await this.pubSub.publish(`newMessage.${chatroomId}`, {
         newMessage,
       });
-      console.log(res);
+      return newMessage
     } catch (err) {
       console.log('err', err);
     }

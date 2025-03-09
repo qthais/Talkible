@@ -6,6 +6,7 @@ import { client } from './apolloClient.ts'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { MantineProvider } from '@mantine/core'
 import Home from './pages/home.tsx'
+import JoinRoomOnWindow from './components/JoinRoomOnWindow.tsx'
 
 const router = createBrowserRouter([
   {
@@ -14,6 +15,7 @@ const router = createBrowserRouter([
     children:[
       {
         path:'/chatrooms/:id',
+        element:<JoinRoomOnWindow/>
       }
     ]
   },
