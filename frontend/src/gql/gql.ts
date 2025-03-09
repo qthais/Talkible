@@ -17,6 +17,7 @@ type Documents = {
     "\n    mutation addUsersToChatroom($chatroomId:Float!, $userIds:[Float!]!){\n        addUsersToChatroom(chatroomId:$chatroomId,userIds:$userIds){\n            name\n            id\n        }\n    }\n": typeof types.AddUsersToChatroomDocument,
     "\n    mutation EnterChatroom($chatroomId: Float!){\n        enterChatroom(chatroomId:$chatroomId)\n    }\n": typeof types.EnterChatroomDocument,
     "\n    mutation LeaveChatroom($chatroomId:Float!){\n        leaveChatroom(chatroomId:$chatroomId)\n    }\n": typeof types.LeaveChatroomDocument,
+    "\n    mutation leaveGroup($chatroomId:Float!){\n        leaveGroup(chatroomId:$chatroomId)\n    }\n": typeof types.LeaveGroupDocument,
     "\n    mutation LoginUser($email: String!, $password: String!){\n        login(loginInput:{email: $email, password:$password}){\n            user{\n                email\n                id\n                fullname\n                avatarUrl\n            }\n        }\n    }\n": typeof types.LoginUserDocument,
     "\n    mutation LogoutUser{\n        logout\n    }\n": typeof types.LogoutUserDocument,
     "\n    mutation RegisterUser(\n        $fullname: String!,\n        $email: String!,\n        $password: String!,\n        $confirmPassword:String!,\n    ){\n        register(\n            registerInput: {\n                fullname: $fullname,\n                email: $email,\n                password: $password,\n                confirmPassword: $confirmPassword,\n            }\n        ){\n            user{\n                id\n                fullname\n                email\n            }\n        }\n    }\n": typeof types.RegisterUserDocument,
@@ -39,6 +40,7 @@ const documents: Documents = {
     "\n    mutation addUsersToChatroom($chatroomId:Float!, $userIds:[Float!]!){\n        addUsersToChatroom(chatroomId:$chatroomId,userIds:$userIds){\n            name\n            id\n        }\n    }\n": types.AddUsersToChatroomDocument,
     "\n    mutation EnterChatroom($chatroomId: Float!){\n        enterChatroom(chatroomId:$chatroomId)\n    }\n": types.EnterChatroomDocument,
     "\n    mutation LeaveChatroom($chatroomId:Float!){\n        leaveChatroom(chatroomId:$chatroomId)\n    }\n": types.LeaveChatroomDocument,
+    "\n    mutation leaveGroup($chatroomId:Float!){\n        leaveGroup(chatroomId:$chatroomId)\n    }\n": types.LeaveGroupDocument,
     "\n    mutation LoginUser($email: String!, $password: String!){\n        login(loginInput:{email: $email, password:$password}){\n            user{\n                email\n                id\n                fullname\n                avatarUrl\n            }\n        }\n    }\n": types.LoginUserDocument,
     "\n    mutation LogoutUser{\n        logout\n    }\n": types.LogoutUserDocument,
     "\n    mutation RegisterUser(\n        $fullname: String!,\n        $email: String!,\n        $password: String!,\n        $confirmPassword:String!,\n    ){\n        register(\n            registerInput: {\n                fullname: $fullname,\n                email: $email,\n                password: $password,\n                confirmPassword: $confirmPassword,\n            }\n        ){\n            user{\n                id\n                fullname\n                email\n            }\n        }\n    }\n": types.RegisterUserDocument,
@@ -84,6 +86,10 @@ export function graphql(source: "\n    mutation EnterChatroom($chatroomId: Float
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    mutation LeaveChatroom($chatroomId:Float!){\n        leaveChatroom(chatroomId:$chatroomId)\n    }\n"): (typeof documents)["\n    mutation LeaveChatroom($chatroomId:Float!){\n        leaveChatroom(chatroomId:$chatroomId)\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation leaveGroup($chatroomId:Float!){\n        leaveGroup(chatroomId:$chatroomId)\n    }\n"): (typeof documents)["\n    mutation leaveGroup($chatroomId:Float!){\n        leaveGroup(chatroomId:$chatroomId)\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

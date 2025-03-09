@@ -7,7 +7,6 @@ import RoomList from '../components/RoomList'
 import Sidebar from '../components/Sidebar'
 import MainLayout from '../layouts/MainLayout'
 import AddChatroom from '../components/AddChatroom'
-import JoinRoomOnWindow from '../components/JoinRoomOnWindow'
 import { Outlet } from 'react-router-dom'
 function Home() {
   return (

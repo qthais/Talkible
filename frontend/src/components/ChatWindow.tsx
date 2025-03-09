@@ -18,7 +18,7 @@ import { Avatar, Button, Card, Divider, Flex, Image, List, ScrollArea, Text, Tex
 import OverlappingAvatar from './OverlappingAvatar'
 import { GET_MESSAGES_FOR_CHATROOM } from '../graphql/queries/getMessagesForChatroom'
 import MessageBubble from './MessageBubble'
-import { IconMichelinBibGourmand } from '@tabler/icons-react'
+import { IconMessage, IconLibraryPhoto, IconMichelinBibGourmand } from '@tabler/icons-react'
 import { GET_CHATROOMS_FOR_USER } from '../graphql/queries/getChatroomsForUser'
 import { NEW_MESSAGE_SUBSCRIPTION } from '../graphql/subscriptions/NewMessage'
 function ChatWindow() {
@@ -105,7 +105,7 @@ function ChatWindow() {
     }
     if (userId) {
       typingTimeoutRef.current[userId] = setTimeout(async () => {
-        setTypingUsers((prevUsers) => 
+        setTypingUsers((prevUsers) =>
           prevUsers.filter(user => user.id !== userId)
         )
         await userStoppedTypingMutation()
@@ -198,18 +198,18 @@ function ChatWindow() {
       setMessages(data.getMessagesForChatroom)
     }
   }, [data])
-  const handleSendMessage=async()=>{
-    try{
+  const handleSendMessage = async () => {
+    try {
       await sendMessage({
-        variables:{
+        variables: {
           chatroomId,
-          content:messageContent,
-          image:selectedFile
+          content: messageContent,
+          image: selectedFile
         },
-        refetchQueries:[
+        refetchQueries: [
           {
-            query:GET_CHATROOMS_FOR_USER,
-            variables:{
+            query: GET_CHATROOMS_FOR_USER,
+            variables: {
               userId
             }
           }
@@ -217,47 +217,48 @@ function ChatWindow() {
       })
       setMessageContent('')
       setSelectedFile(null)
-    }catch(err){
+    } catch (err) {
       console.log(err.message)
     }
   }
 
-  const scrollToBottom=()=>{
-    if(scrollAreaRef.current){
-      const scrollElement=scrollAreaRef.current
+  const scrollToBottom = () => {
+    if (scrollAreaRef.current) {
+      const scrollElement = scrollAreaRef.current
       scrollElement.scrollTo({
-        top:scrollElement.scrollHeight,
-        behavior:'smooth'
+        top: scrollElement.scrollHeight,
+        behavior: 'smooth'
       })
     }
   }
-  useEffect(()=>{
-    if(data?.getMessagesForChatroom){
-      const uniqueMessages=Array.from(
-        new Set(data.getMessagesForChatroom.map((m)=>m.id))
-      ).map((id)=>data.getMessagesForChatroom.find((m)=>m.id===id))
+  useEffect(() => {
+    if (data?.getMessagesForChatroom) {
+      const uniqueMessages = Array.from(
+        new Set(data.getMessagesForChatroom.map((m) => m.id))
+      ).map((id) => data.getMessagesForChatroom.find((m) => m.id === id))
       setMessages(uniqueMessages as Message[])
       scrollToBottom()
     }
-  },[data?.getMessagesForChatroom])
+  }, [data?.getMessagesForChatroom])
+  
   const {
-    data:dataSub,
-    loading:loadingSub,
-    error:errorSub
-  }=useSubscription<NewMessageSubscription>(NEW_MESSAGE_SUBSCRIPTION,{
-    variables:{
+    data: dataSub,
+    loading: loadingSub,
+    error: errorSub
+  } = useSubscription<NewMessageSubscription>(NEW_MESSAGE_SUBSCRIPTION, {
+    variables: {
       chatroomId
     }
   })
-  useEffect(()=>{
+  useEffect(() => {
     scrollToBottom()
-    if(dataSub?.newMessage){
+    if (dataSub?.newMessage) {
       const newMessage = dataSub.newMessage as Message;
-      if(!messages.find((m)=>m.id===dataSub.newMessage?.id)){
-        setMessages((prevMsgs)=>[...prevMsgs,newMessage])
+      if (!messages.find((m) => m.id === dataSub.newMessage?.id)) {
+        setMessages((prevMsgs) => [...prevMsgs, newMessage])
       }
     }
-  },[dataSub?.newMessage,messages])
+  }, [dataSub?.newMessage, messages])
   return (
     <Flex
       justify={'center'}
@@ -288,34 +289,33 @@ function ChatWindow() {
                   justify={'space-around'}
                   align={'start'}
                 >
-                  <List w={150}>
-                    <Text mb={'xs'} c={'dimmed'} italic>
-                      Live users
-                    </Text>
+                  <Flex gap={20} w={150}>
                     {liveUsersData?.liveUsersInChatroom?.map((user) => (
-                      <Flex
-                        key={user.id}
-                        pos={'relative'}
-                        w={25}
-                        h={25}
-                        my={'xs'}
-                      >
-                        <Avatar radius={'xl'} size={25} src={user.avatarUrl ? user.avatarUrl : null} />
+                      <Tooltip label={user.fullname}>
                         <Flex
-                          pos={'absolute'}
-                          bottom={0}
-                          right={0}
-                          w={10}
-                          h={10}
-                          bg={'green'}
-                          style={{
-                            borderRadius: 10
-                          }}
-                        ></Flex>
-                        <Text ml={'sm'}>{user.fullname}</Text>
-                      </Flex>
+                          key={user.id}
+                          pos={'relative'}
+                          w={25}
+                          h={25}
+                          my={'xs'}
+                        >
+                          <Avatar radius={'xl'} size={40} src={user.avatarUrl ? user.avatarUrl : null} />
+
+                          <Flex
+                            pos={'absolute'}
+                            bottom={-15}
+                            right={-15}
+                            w={10}
+                            h={10}
+                            bg={'green'}
+                            style={{
+                              borderRadius: 10
+                            }}
+                          ></Flex>
+                        </Flex>
+                      </Tooltip>
                     ))}
-                  </List>
+                  </Flex>
                 </Flex>
               </Flex>
               <Divider size={'sm'} w={'100%'} />
@@ -334,7 +334,7 @@ function ChatWindow() {
                     messages?.map((msg) => {
                       console.log(msg)
                       return (
-                        <MessageBubble key={msg.id} message={msg} currentUserId={userId} />
+                        <MessageBubble key={msg.id} message={msg} currentUserId={userId!} />
                       )
                     })
                   }
@@ -373,7 +373,7 @@ function ChatWindow() {
                   bg={'#f1f1f0'}
                   style={{
                     borderRadius: 5,
-                    boxShadow: '8px 8px 5px 0px #000',
+
                   }}
                   p={typingUsers?.length === 0 ? 0 : 'sm'}
                 >
@@ -389,43 +389,54 @@ function ChatWindow() {
                   </Avatar.Group>
                   {typingUsers.length > 0 && (
                     <Text italic c='dimmed'>
-                      is typing...
+                      &nbsp;is typing...
                     </Text>
                   )}
                 </Flex>
                 <Flex w={'100%'} mx={'md'} align={'center'} justify={'center'}>
                   <Flex {...getRootProps()} align={'center'} >
-                    {selectedFile&&(
+                    {selectedFile && (
                       <Image
-                      mr={'md'}
-                      width={50}
-                      height={50}
-                      src={previewUrl}
-                      alt='Preview'
-                      radius={'md'}
+                        mr={'md'}
+                        width={50}
+                        height={50}
+                        src={previewUrl}
+                        alt='Preview'
+                        radius={'md'}
                       />
                     )}
-                    <Button leftIcon={(<IconMichelinBibGourmand/>)}></Button>
-                    <input {...getInputProps()}/>
+                    <div className="mr-3 group relative flex items-center justify-center w-12 h-12 rounded-full bg-gray-200 cursor-pointer transition-all duration-300 hover:bg-gray-300">
+                      <IconLibraryPhoto className="w-6 h-6 text-gray-700 group-hover:text-black transition-all duration-300" />
+                      <div className="absolute inset-0 rounded-full bg-gray-400 opacity-0 group-hover:opacity-20 transition-all duration-300"></div>
+                    </div>
+
+                    <input {...getInputProps()} />
                   </Flex>
                   <TextInput
-                  onKeyDown={handleUserStartedTyping}
-                  style={{flex:0.7}}
-                  value={messageContent}
-                  onChange={(e)=>setMessageContent(e.currentTarget.value)}
-                  placeholder='Type your message...'
-                  rightSection={
-                    <Button
+                  
+                    mr={30}
+                    radius={10}
+                    onKeyDown={(e)=>{
+                      handleUserStartedTyping()
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault(); // Prevent line break
+                        handleSendMessage();
+                      }
+                    }}
+                    style={{ flex: 0.7 }}
+                    value={messageContent}
+                    onChange={(e) => setMessageContent(e.currentTarget.value)}
+                    placeholder='Type your message...'
+
+                  />
+                  <Button
                     onClick={handleSendMessage}
                     color='blue'
-                    leftIcon={<IconMichelinBibGourmand/>}
-                    >
-                      
-                      Send
-                    </Button>
-                  }
-                  />
+                    leftIcon={<IconMessage />}
+                  >
 
+                    Send
+                  </Button>
                 </Flex>
               </Flex>
             </Flex>

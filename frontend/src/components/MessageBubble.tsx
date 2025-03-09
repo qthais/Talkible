@@ -25,11 +25,6 @@ const MessageBubble:React.FC<MessageProps>=({message,currentUserId})=>{
         />
       )}
       <Flex direction={'column'} justify={'center'} align={'center'}>
-        {isSentBycurrentUser?(
-          <span>me</span>
-        ):(
-          <span>{message.user.fullname}</span>
-        )}
         <Paper
         p={'md'}
         style={{
@@ -43,6 +38,7 @@ const MessageBubble:React.FC<MessageProps>=({message,currentUserId})=>{
           {message.content}
           {message.imageUrl&&(
             <Image
+            my={10}
             width={250}
             height={250}
             fit='cover'

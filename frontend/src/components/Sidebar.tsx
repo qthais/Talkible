@@ -13,7 +13,6 @@ import {
 import {
   IconUser,
   IconLogout,
-  IconBrandHipchat,
   IconBrandWechat,
   IconLogin
 } from "@tabler/icons-react"

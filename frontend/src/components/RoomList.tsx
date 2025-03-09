@@ -3,13 +3,20 @@ import { useGeneralStore } from '../stores/generalStore'
 import { useMediaQuery } from '@mantine/hooks';
 import { useUserStore } from '../stores/userStore'
 import { useMutation, useQuery } from '@apollo/client'
-import { GetChatroomForUserQuery } from '../gql/graphql'
 import { GET_CHATROOMS_FOR_USER } from '../graphql/queries/getChatroomsForUser'
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { DELETE_CHATROOM } from '../graphql/mutations/deleteChatroom';
 import { Button, Card, Flex, Group, Loader, ScrollArea, Text } from '@mantine/core';
-import { IconPlus, IconX } from '@tabler/icons-react';
+import { IconPlus } from '@tabler/icons-react';
 import OverlappingAvatar from './OverlappingAvatar';
+import { GetChatroomsForUserQuery, LeaveGroupMutation } from '../gql/graphql';
+import { LEAVE_GROUP } from '../graphql/mutations/LeaveGroup';
+import {
+  IconLogout,
+} from "@tabler/icons-react"
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 function RoomList() {
   const toggleCreateRoomModal = useGeneralStore((state) => state.toggleCreateRoomModal)
   const userId = useUserStore((state) => state.id)
@@ -24,14 +31,14 @@ function RoomList() {
   const defaultFlexStyle: React.CSSProperties = {
     maxWidth: isSmallDevice ? 'unset' : '200px'
   }
-  const { data, loading, error } = useQuery<GetChatroomForUserQuery>(
+  const { data, loading, error } = useQuery<GetChatroomsForUserQuery>(
     GET_CHATROOMS_FOR_USER,
     {
       variables: {
         userId: userId
       }
     })
-  const [deleteChatroom] = useMutation(DELETE_CHATROOM, {
+  const [leaveGroup] = useMutation<LeaveGroupMutation>(LEAVE_GROUP, {
     variables: {
       chatroomId: activeRoomId
     },
@@ -91,7 +98,7 @@ function RoomList() {
                   >
                     <Card
                       sx={(theme) => ({
-                        width:'100%',
+                        width: '100%',
                         '&:hover': {
                           backgroundColor: theme.colors.gray[2], // Use Mantine's theme color
                         },
@@ -112,6 +119,7 @@ function RoomList() {
                             style={defaultFlexStyle}
                             direction={'column'}
                             align={'start'}
+                            ml={'15%'}
                             w={'100%'}
                             h={'100%'}
                           >
@@ -119,13 +127,23 @@ function RoomList() {
                               direction={'column'}
 
                             >
-                              <Text size={'lg'} style={defaultTextStyle}>{chatroom.name}</Text>
-                              <Text style={defaultTextStyle}>{chatroom.messages[0].content}</Text>
-                              <Text c={'dimmed'} style={defaultTextStyle}>{new Date(chatroom.messages[0].createdAt).toLocaleString()}</Text>
+                              <Text className='text-xl font-bold' style={defaultTextStyle}>{chatroom.name}</Text>
+                              <Text italic c={'dimmed'} style={defaultTextStyle}>{chatroom.messages[0].user?.fullname}:  {chatroom.messages[0].content}</Text>
+                              <Text c={"dimmed"} style={defaultTextStyle}>
+                                {dayjs(chatroom.messages[0].createdAt).fromNow()}
+                              </Text>
                             </Flex>
                           </Flex>
                         ) : (
-                          <Flex align={'center'} justify={'center'}>
+                          <Flex
+                            style={defaultFlexStyle}
+                            direction={'column'}
+                            align={'start'}
+                            ml={'15%'}
+                            w={'100%'}
+                            h={'100%'}
+                          >
+                            <Text className='text-xl font-bold' style={defaultTextStyle}>{chatroom.name}</Text>
                             <Text italic c={'dimmed'}>
                               No Messages
                             </Text>
@@ -139,10 +157,10 @@ function RoomList() {
                             color='red'
                             onClick={(e) => {
                               e.preventDefault()
-                              deleteChatroom()
+                              leaveGroup()
                             }}
                           >
-                            <IconX />
+                            <IconLogout />
                           </Button>
                         </Flex>
                       </Flex>

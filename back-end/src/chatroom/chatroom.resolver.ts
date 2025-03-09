@@ -36,11 +36,9 @@ export class ChatroomResolver {
     nullable: true,
     resolve: (value) => value.user,
     filter: (payload, variables) => {
-      console.log('payload1', variables, payload.typingUserId);
       return variables.userId !== payload.typingUserId;
     },
   })
-  //todo
   userStartedTyping(@Args('chatroomId') chatroomId: number,@Args('userId') userId:number) {
     return this.pubSub.asyncIterableIterator(`userStartedTyping.${chatroomId}`);
   }
@@ -52,7 +50,7 @@ export class ChatroomResolver {
       return variables.userId !== payload.typingUserId;
     },
   })
-  userStoppedTyping(@Args('chatroomId') chatroomId: number,@Args('userId') userId:number) {
+  userStoppedTyping(@Args('chatroomId') chatroomId: number, @Args('userId') userId:number) {
     return this.pubSub.asyncIterableIterator(`userStoppedTyping.${chatroomId}`);
   }
 
@@ -106,7 +104,6 @@ export class ChatroomResolver {
         context.req.user.sub,
         imagePath,
       );
-      console.log(newMessage)
       const res = await this.pubSub.publish(`newMessage.${chatroomId}`, {
         newMessage,
       });
@@ -144,5 +141,11 @@ export class ChatroomResolver {
   async deleteChatroom(@Args('chatroomId') chatroomId: number) {
     await this.chatroomService.deleteChatroom(chatroomId);
     return 'Chatroom deleted successfully!';
+  }
+  @UseGuards(GraphqlAuthGurad)
+  @Mutation(()=>String)
+  async leaveGroup(@Args('chatroomId') chatroomId: number,@Context() context: { req: Request }) {
+    await this.chatroomService.leaveGroup(chatroomId,context.req.user.sub)
+    return 'Leave successfully!';
   }
 }

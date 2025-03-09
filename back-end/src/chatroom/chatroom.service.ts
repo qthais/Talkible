@@ -76,6 +76,9 @@ export class ChatroomService {
                     }
                 },
                 messages:{
+                    include:{
+                        user:true
+                    },
                     take:1,
                     orderBy:{
                         createdAt:'desc'
@@ -149,6 +152,20 @@ export class ChatroomService {
         return this.prisma.chatroom.delete({
             where:{
                 id:chatroomId
+            }
+        })
+    }
+    async leaveGroup(chatroomId:number,userId:number){
+        return this.prisma.chatroom.update({
+            where:{
+                id:chatroomId
+            },
+            data:{
+                users:{
+                    disconnect:{
+                        id:userId
+                    }
+                }
             }
         })
     }
