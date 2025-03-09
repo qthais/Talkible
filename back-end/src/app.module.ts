@@ -46,25 +46,25 @@ const pubSub = new RedisPubSub({
           sortSchema: true,
           subscriptions: {
             'graphql-ws': {
-              onConnect: (context: Context<any,any>) => {
-                const { connectionParams, extra } = context; // ✅ Correct way to extract params
+              // onConnect: (context: Context<any,any>) => {
+              //   const { connectionParams, extra } = context; // ✅ Correct way to extract params
 
-                const token = tokenService.extractToken(connectionParams);
-                if (!token) {
-                  throw new Error('Token not provided');
-                }
+              //   const token = tokenService.extractToken(connectionParams);
+              //   if (!token) {
+              //     throw new Error('Token not provided');
+              //   }
 
-                const user = tokenService.validateToken(token);
-                if (!user) {
-                  throw new Error('Invalid token');
-                }
+              //   const user = tokenService.validateToken(token);
+              //   if (!user) {
+              //     throw new Error('Invalid token');
+              //   }
 
-                extra.user = user; // ✅ Store user inside `extra` for access in resolvers
-              },
+              //   extra.user = user; // ✅ Store user inside `extra` for access in resolvers
+              // },
             },
           },
-          context: ({req,res,extra}) => {
-            return { req,res,extra }; // ✅ Now you can access `user` inside resolvers
+          context: ({req,res}) => {
+            return { req,res }; // ✅ Now you can access `user` inside resolvers
           },
         };
       },

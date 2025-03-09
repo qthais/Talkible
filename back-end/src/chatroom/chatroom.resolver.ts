@@ -40,7 +40,8 @@ export class ChatroomResolver {
       return variables.userId !== payload.typingUserId;
     },
   })
-  userStartedTyping(@Args('chatroomId') chatroomId: number) {
+  //todo
+  userStartedTyping(@Args('chatroomId') chatroomId: number,@Args('userId') userId:number) {
     return this.pubSub.asyncIterableIterator(`userStartedTyping.${chatroomId}`);
   }
 
@@ -51,7 +52,7 @@ export class ChatroomResolver {
       return variables.userId !== payload.typingUserId;
     },
   })
-  userStoppedTyping(@Args('chatroomId') chatroomId: number) {
+  userStoppedTyping(@Args('chatroomId') chatroomId: number,@Args('userId') userId:number) {
     return this.pubSub.asyncIterableIterator(`userStoppedTyping.${chatroomId}`);
   }
 

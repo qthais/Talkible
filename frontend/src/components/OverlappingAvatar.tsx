@@ -22,7 +22,7 @@ function OverlappingAvatar({users}:{users:User[]}) {
         })}
         {users.length>3&&(
           <Tooltip label={remainingNames}>
-            <Avatar size={'lg'} radius={'xl'} children={`+${users.length-3}`} />
+            <Avatar size={'md'} radius={'xl'} children={`+${users.length-3}`} />
           </Tooltip>
         )}
         </>

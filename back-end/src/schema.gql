@@ -71,10 +71,10 @@ type RegisterResponse {
 }
 
 type Subscription {
-  liveUsersInChatRoom(chatroomId: Float!): [User!]
+  liveUsersInChatroom(chatroomId: Float!): [User!]
   newMessage(chatroomId: Float!): Message
-  userStartedTyping(chatroomId: Float!): User
-  userStoppedTyping(chatroomId: Float!): User
+  userStartedTyping(chatroomId: Float!, userId: Float!): User
+  userStoppedTyping(chatroomId: Float!, userId: Float!): User
 }
 
 """The `Upload` scalar type represents a file upload."""

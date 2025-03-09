@@ -19,12 +19,14 @@ export class LiveChatroomResolver {
     }
     @Subscription(()=>[User],{
         nullable:true,
-        resolve:(value)=>value.liveUsers,
+        resolve:(value)=>{
+            return value.liveUsers
+        },
         filter:(payload,variables)=>{
             return payload.chatroomId===variables.chatroomId
         }
     })
-    liveUsersInChatRoom(@Args('chatroomId') chatroomId:number){
+    liveUsersInChatroom(@Args('chatroomId') chatroomId:number){
         return this.pubSub.asyncIterableIterator(`liveUsersInChatroom.${chatroomId}`)
     }
 

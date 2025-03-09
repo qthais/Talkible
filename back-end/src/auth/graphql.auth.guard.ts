@@ -25,7 +25,6 @@ export class GraphqlAuthGurad implements CanActivate{
             const payload=await this.jwtService.verifyAsync(token,{
                 secret:this.configSerVice.get<string>('ACCESS_TOKEN_SECRET')
             })
-            console.log('payload',token)
             request['user']=payload;
         }catch(err){
             console.log('err: ',err)
