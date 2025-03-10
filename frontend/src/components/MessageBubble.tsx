@@ -24,7 +24,7 @@ const MessageBubble:React.FC<MessageProps>=({message,currentUserId})=>{
         alt={message.user.fullname}
         />
       )}
-      <Flex direction={'column'} justify={'center'} align={'center'}>
+      <Flex maw={'70%'} direction={'column'} justify={'center'} align={'center'}>
         <Paper
         p={'md'}
         style={{
