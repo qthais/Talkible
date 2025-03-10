@@ -53,6 +53,7 @@ type Mutation {
 }
 
 type Query {
+  authCheck: jwtPayload!
   getChatroomsForUser(userId: Float!): [Chatroom!]!
   getMessagesForChatroom(chatroomId: Float!): [Message!]!
   getUsersOfChatroom(chatroomId: Float!): [User!]!
@@ -89,4 +90,9 @@ type User {
   id: Float
   password: String
   updatedAt: DateTime
+}
+
+type jwtPayload {
+  sub: Float!
+  username: String!
 }

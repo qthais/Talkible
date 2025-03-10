@@ -12,3 +12,10 @@ export class LoginResponse{
     user:User
 }
 
+@ObjectType()
+export class jwtPayload{
+    @Field()
+    username:string
+    @Field()
+    sub:number
+}

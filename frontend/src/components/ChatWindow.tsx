@@ -291,7 +291,7 @@ function ChatWindow() {
                 >
                   <Flex gap={20} w={150}>
                     {liveUsersData?.liveUsersInChatroom?.map((user) => (
-                      <Tooltip label={user.fullname}>
+                      <Tooltip key={user.id} label={user.fullname}>
                         <Flex
                           key={user.id}
                           pos={'relative'}
@@ -332,7 +332,6 @@ function ChatWindow() {
                 <>
                   {
                     messages?.map((msg) => {
-                      console.log(msg)
                       return (
                         <MessageBubble key={msg.id} message={msg} currentUserId={userId!} />
                       )
