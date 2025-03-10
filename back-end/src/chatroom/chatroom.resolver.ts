@@ -8,7 +8,7 @@ import {
 } from '@nestjs/graphql';
 import { ChatroomService } from './chatroom.service';
 import { UserService } from 'src/user/user.service';
-import { UseFilters, UseGuards } from '@nestjs/common';
+import { Inject, UseFilters, UseGuards } from '@nestjs/common';
 import { GraphQLErrorFilter } from 'src/filters/custom-exception.filter';
 import { GraphqlAuthGurad } from 'src/auth/graphql.auth.guard';
 import { Chatroom, Message } from './chatroom.types';
@@ -18,16 +18,17 @@ import { User } from 'src/user/user.type';
 import { FileUpload, GraphQLUpload } from 'graphql-upload-ts';
 @Resolver()
 export class ChatroomResolver {
-  public pubSub: PubSub;
   constructor(
+    @Inject('PUB_SUB') private readonly pubSub:PubSub,
     private readonly chatroomService: ChatroomService,
     private readonly userService: UserService,
-  ) {
-    this.pubSub = new PubSub();
-  }
+  ) {}
   @Subscription(() => Message, {
     nullable: true,
-    resolve: (value) => value.newMessage,
+    resolve: (value) => ({
+      ...value.newMessage,
+      createdAt: new Date(value.newMessage.createdAt), // ✅ convert back to Date object
+    }),
   })
   newMessage(@Args('chatroomId') chatroomId: number) {
     return this.pubSub.asyncIterableIterator(`newMessage.${chatroomId}`);

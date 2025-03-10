@@ -10,19 +10,9 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ChatroomModule } from './chatroom/chatroom.module';
 import { LiveChatroomModule } from './live-chatroom/live-chatroom.module';
-import { RedisPubSubModule } from './redis-pubsub.module';
-// const pubSub = new RedisPubSub({
-//   connection: {
-//     host: process.env.REDIS_HOST || 'localhost',
-//     port: parseInt(process.env.REDIS_PORT || '6379', 10),
-//     retryStrategy: (times) => {
-//       return Math.min(times * 50, 2000);
-//     },
-//   },
-// });
+import { RedisPubSubModule } from './redis-pubsub/redis-pubsub.module';
 @Module({
   imports: [
-    RedisPubSubModule,
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       imports: [
         ServeStaticModule.forRoot({

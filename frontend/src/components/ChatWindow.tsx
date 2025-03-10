@@ -105,9 +105,6 @@ function ChatWindow() {
     }
     if (userId) {
       typingTimeoutRef.current[userId] = setTimeout(async () => {
-        setTypingUsers((prevUsers) =>
-          prevUsers.filter(user => user.id !== userId)
-        )
         await userStoppedTypingMutation()
       }, 5000)
     }
