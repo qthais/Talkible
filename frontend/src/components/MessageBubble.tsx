@@ -8,6 +8,15 @@ interface MessageProps{
 
 const MessageBubble:React.FC<MessageProps>=({message,currentUserId})=>{
   const theme=useMantineTheme()
+  if (message.systemMessage) {
+    return (
+      <Flex justify={"center"} align={"center"} my={10}>
+        <Text color="gray" italic>
+          {message.content}
+        </Text>
+      </Flex>
+    );
+  }
   if(!message?.user?.id) return null
   const isSentBycurrentUser=message.user.id===currentUserId
   return(

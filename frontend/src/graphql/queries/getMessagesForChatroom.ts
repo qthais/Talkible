@@ -7,6 +7,7 @@ export const GET_MESSAGES_FOR_CHATROOM=gql`
             content
             imageUrl
             createdAt
+            systemMessage
             user{
                 id
                 fullname

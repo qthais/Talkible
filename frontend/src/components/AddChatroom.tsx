@@ -1,21 +1,25 @@
 import { useEffect, useState } from 'react'
 import { useGeneralStore } from '../stores/generalStore'
-import { Button, Group,  Modal, MultiSelect,  Stepper,  TextInput } from '@mantine/core'
+import { Button, Group, Modal, MultiSelect, Stepper, TextInput } from '@mantine/core'
 import { useMutation, useQuery } from '@apollo/client'
-import {  AddUsersToChatroomMutation, Chatroom, CreateChatroomMutation, SearchUsersQuery } from '../gql/graphql'
+import { AddUsersToChatroomMutation, Chatroom, CreateChatroomMutation, SearchUsersQuery, SendMessageMutation } from '../gql/graphql'
 import { CREATE_CHATROOM } from '../graphql/mutations/createChatroom'
 import { useForm } from '@mantine/form'
 import { SEARCH_USER } from '../graphql/queries/SearchUser.s'
 import { ADD_USERS_TO_CHATROOM } from '../graphql/mutations/AddUsersToChatroom'
 import { IconPlus } from '@tabler/icons-react'
+import { SEND_MESSAGE } from '../graphql/mutations/sendMessages'
+import { useUserStore } from '../stores/userStore'
+import { GET_CHATROOMS_FOR_USER } from '../graphql/queries/getChatroomsForUser'
 
 
 function AddChatroom({ chatroomId }: { chatroomId?: number }) {
+    const user=useUserStore()
     const [active, setActive] = useState(chatroomId ? 2 : 1);
     const [highestStepVisited, setHighestStepVisited] = useState(active)
     const isCreateRoomModalOpen = useGeneralStore((state) => state.isCreateRoomModalOpen)
     const toggleCreateRoomModal = useGeneralStore((state) => state.toggleCreateRoomModal)
-    const closeCreateRoomModal=useGeneralStore((state)=>state.closeCreateRoomModal)
+    const closeCreateRoomModal = useGeneralStore((state) => state.closeCreateRoomModal)
     const handleStepChange = (nextStep: number) => {
         const isOutOfBounds = nextStep > 2 || nextStep < 0
         if (isOutOfBounds) {
@@ -24,6 +28,7 @@ function AddChatroom({ chatroomId }: { chatroomId?: number }) {
         setActive(nextStep)
         setHighestStepVisited((hSC) => Math.max(hSC, nextStep))
     }
+
     const [createChatroom, { loading }] = useMutation<CreateChatroomMutation>(CREATE_CHATROOM)
     const form = useForm({
         initialValues: {
@@ -54,21 +59,26 @@ function AddChatroom({ chatroomId }: { chatroomId?: number }) {
         })
     }
     const [searchTerm, setSearchTerm] = useState('')
+    const [sendMessage, { data: sendMessageData }] = useMutation<SendMessageMutation>(SEND_MESSAGE)
     const { data, refetch } = useQuery<SearchUsersQuery>(SEARCH_USER, {
-        variables: { fullname: searchTerm }
+        variables: { fullname: searchTerm },
+        onCompleted:(dataSearch)=>{
+            console.log(dataSearch)
+        }
     })
-    const [addUsersToChatroom, { loading: loadingAddUsers }] = useMutation<AddUsersToChatroomMutation>(ADD_USERS_TO_CHATROOM, {
+    const [addUsersToChatroom, { data:chatroomData }] = useMutation<AddUsersToChatroomMutation>(ADD_USERS_TO_CHATROOM, {
         refetchQueries: ['getChatroomsForUser'],
     })
     const [selectedUsers, setSelectedUsers] = useState<string[]>([])
     const handleAddUsersToChatroom = async () => {
         await addUsersToChatroom({
             variables: {
-                chatroomId: chatroomId ? chatroomId : newlyCreatedChatroom?.id ? parseInt(newlyCreatedChatroom.id) : null                ,
+                chatroomId: chatroomId ? chatroomId : newlyCreatedChatroom?.id ? parseInt(newlyCreatedChatroom.id) : null,
                 userIds: selectedUsers.map((userId) => parseInt(userId))
             },
             onCompleted: () => {
                 handleStepChange(1)
+                handleSendMessage('join')
                 closeCreateRoomModal()
                 setSelectedUsers([])
                 setNewlyCreatedChatroom(null)
@@ -80,6 +90,31 @@ function AddChatroom({ chatroomId }: { chatroomId?: number }) {
                 })
             }
         })
+    }
+    const handleSendMessage = async (action: string) => {
+        for(const memberId of selectedUsers){
+            const userData = selectItems.find((item) => item.value == memberId);
+            const username = userData ? userData.label : `User ${memberId}`;
+            try {
+                await sendMessage({
+                    variables: {
+                        chatroomId: chatroomId,
+                        content: `${username} ${action} the room`,
+                        systemMessage: true
+                    },
+                    refetchQueries: [
+                        {
+                            query: GET_CHATROOMS_FOR_USER,
+                            variables: {
+                                userId:user.id
+                            }
+                        }
+                    ]
+                })
+            } catch (err) {
+                console.log(err.message)
+            }
+        }
     }
     let debounceTimeout: NodeJS.Timeout
     const handleSearchChange = (term: string) => {
@@ -100,7 +135,7 @@ function AddChatroom({ chatroomId }: { chatroomId?: number }) {
     useEffect(() => {
         console.log(chatroomId)
         setActive(chatroomId ? 2 : 1);
-      }, [chatroomId]);
+    }, [chatroomId]);
     return (
         <Modal opened={isCreateRoomModalOpen} onClose={closeCreateRoomModal}>
             <Stepper
@@ -124,14 +159,18 @@ function AddChatroom({ chatroomId }: { chatroomId?: number }) {
                 </Stepper.Step>
                 <Stepper.Completed>
                     <MultiSelect
-                        onSearchChange={(value)=>{handleSearchChange(value)}}
+                        onSearchChange={(value) => { 
+                            handleSearchChange(value) }}
                         nothingFound='No users found'
                         searchable
                         pb={'xl'}
                         data={selectItems}
                         label='Choose the members you want to add'
                         placeholder='Pick all the users'
-                        onChange={(values) => setSelectedUsers(values)}
+                        onChange={(values) => {
+                            console.log(values)
+                            setSelectedUsers(values)
+                        }}
                     />
                 </Stepper.Completed>
             </Stepper>

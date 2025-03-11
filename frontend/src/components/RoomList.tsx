@@ -8,7 +8,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Card, Flex, Group, Loader, ScrollArea, Text } from '@mantine/core';
 import { IconPlus, IconUsersPlus } from '@tabler/icons-react';
 import OverlappingAvatar from './OverlappingAvatar';
-import { GetChatroomsForUserQuery, LeaveGroupMutation, UserIsAddedSubscription, UserLeaveChatGroupSubscription } from '../gql/graphql';
+import { GetChatroomsForUserQuery, LeaveChatroomMutation, LeaveGroupMutation, SendMessageMutation, UserIsAddedSubscription, UserLeaveChatGroupSubscription } from '../gql/graphql';
 import { LEAVE_GROUP } from '../graphql/mutations/LeaveGroup';
 import {
   IconLogout,
@@ -18,12 +18,17 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { USER_LEAVE_CHAT_GROUP } from '../graphql/subscriptions/UserLeaveChatGroup';
 import { USER_IS_ADDED } from '../graphql/subscriptions/AddUser';
 import { useChatStore } from '../stores/chatStore';
+import { SEND_MESSAGE } from '../graphql/mutations/sendMessages';
+import { LEAVE_CHATROOM } from '../graphql/mutations/LeaveChatroom';
 
 dayjs.extend(relativeTime);
 function RoomList() {
+  const [sendMessage, { data: sendMessageData }] = useMutation<SendMessageMutation>(SEND_MESSAGE)
   const { newMessageReceived, setNewMessageReceived } = useChatStore();
+  const [leaveChatroom] = useMutation<LeaveChatroomMutation>(LEAVE_CHATROOM)
   const toggleCreateRoomModal = useGeneralStore((state) => state.toggleCreateRoomModal)
   const userId = useUserStore((state) => state.id)
+  const user=useUserStore((state)=>state)
   const navigate = useNavigate()
   const [activeRoomId, setActiveRoomId] = useState<number | null>(parseInt(useParams<{ id: string }>().id || "0"))
   const isSmallDevice = useMediaQuery("(max-width:768px")
@@ -76,9 +81,31 @@ function RoomList() {
       }
     ],
     onCompleted: (data) => {
+      handleSendMessage('leave')
       navigate('/')
     }
   })
+    const handleSendMessage = async (action:string) => {
+      try {
+        await sendMessage({
+          variables: {
+            chatroomId:activeRoomId,
+            content: `${user.fullname} ${action} the room`,
+            systemMessage:true
+          },
+          refetchQueries: [
+            {
+              query: GET_CHATROOMS_FOR_USER,
+              variables: {
+                userId
+              }
+            }
+          ]
+        })
+      } catch (err) {
+        console.log(err.message)
+      }
+    }
   useEffect(() => {
     if (newMessageReceived) {
       refetch();
@@ -189,7 +216,6 @@ function RoomList() {
                             color='blue'
                             onClick={(e) => {
                               e.preventDefault()
-                              console.log('chatroomId: ',chatroom.id)
                               toggleCreateRoomModal(parseInt(chatroom.id!))
                             }}
                           >
@@ -201,6 +227,7 @@ function RoomList() {
                             color='red'
                             onClick={(e) => {
                               e.preventDefault()
+                              leaveChatroom({variables:{chatroomId:activeRoomId}})
                               leaveGroup()
                             }}
                           >

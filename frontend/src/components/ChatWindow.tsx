@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useSubscription } from '@apollo/client'
 import React, { useEffect, useRef, useState } from 'react'
-import { EnterChatroomMutation, GetMessagesForChatroomQuery, GetUserOfChatroomQuery, LeaveChatroomMutation, LiveUsersInChatRoomSubscription, Message, NewMessageSubscription, SendMessageMutation, User, UserStartedTypingMutationMutation, UserStartedTypingSubscription, UserStoppedTypingMutationMutation, UserStoppedTypingSubscription } from '../gql/graphql'
+import { EnterChatroomMutation, GetChatroomDetailsQuery, GetMessagesForChatroomQuery, GetUserOfChatroomQuery, LeaveChatroomMutation, LiveUsersInChatRoomSubscription, Message, NewMessageSubscription, SendMessageMutation, User, UserActivitySubscription, UserStartedTypingMutationMutation, UserStartedTypingSubscription, UserStoppedTypingMutationMutation, UserStoppedTypingSubscription } from '../gql/graphql'
 import { SEND_MESSAGE } from '../graphql/mutations/sendMessages'
 import { useDropzone } from 'react-dropzone'
 import { useParams } from 'react-router-dom'
@@ -13,15 +13,14 @@ import { LEAVE_CHATROOM } from '../graphql/mutations/LeaveChatroom'
 import { LIVE_USERS_SUBSCRIPTION } from '../graphql/subscriptions/LiveUsers'
 import { USER_STARTED_TYPING_SUBSCRIPTION } from '../graphql/subscriptions/UserStartedTypingSubscription'
 import { USER_STOPPED_TYPING_SUBSCRIPTION } from '../graphql/subscriptions/UserStoppedTypingSubscription'
-import { GET_USERS_OF_CHATROOM } from '../graphql/queries/GetUsersOfChatroom'
-import { Avatar, Button, Card, Divider, Flex, Image, List, ScrollArea, Text, TextInput, Tooltip } from '@mantine/core'
-import OverlappingAvatar from './OverlappingAvatar'
+import { Avatar, Button, Card, Divider, Flex, Image, ScrollArea, Text, TextInput, Tooltip } from '@mantine/core'
 import { GET_MESSAGES_FOR_CHATROOM } from '../graphql/queries/getMessagesForChatroom'
 import MessageBubble from './MessageBubble'
-import { IconMessage, IconLibraryPhoto, IconMichelinBibGourmand } from '@tabler/icons-react'
+import { IconMessage, IconLibraryPhoto } from '@tabler/icons-react'
 import { GET_CHATROOMS_FOR_USER } from '../graphql/queries/getChatroomsForUser'
 import { NEW_MESSAGE_SUBSCRIPTION } from '../graphql/subscriptions/NewMessage'
 import { useChatStore } from '../stores/chatStore'
+import { GET_CHATROOM_DETAILS } from '../graphql/queries/GetChatRoom'
 function ChatWindow() {
 
   const { setNewMessageReceived } = useChatStore();
@@ -50,20 +49,14 @@ function ChatWindow() {
     }
   })
   const {
-    data: stoppedTypingData,
-    loading: stoppedTypingLoading,
-    error: stoppedTypingError
+    data: stoppedTypingData
   } = useSubscription<UserStoppedTypingSubscription>(USER_STOPPED_TYPING_SUBSCRIPTION, {
     variables: {
       chatroomId: parseInt(id!),
       userId: userId
     }
   })
-  const [userStartedTypingMutation, {
-    data: dataStartedTyping,
-    loading: loadingStartedTyping,
-    error: errorStartedTyping
-  }] = useMutation<UserStartedTypingMutationMutation>(USER_STARTED_TYPING_MUTATION, {
+  const [userStartedTypingMutation] = useMutation<UserStartedTypingMutationMutation>(USER_STARTED_TYPING_MUTATION, {
     onCompleted: () => {
       console.log('User started typing')
     },
@@ -154,22 +147,16 @@ function ChatWindow() {
       console.log('Error leaving chatroom', err)
     }
   }
-  const [isUserPartOfChatroom, setIsUserPartOfChatroom] = useState<() => boolean | undefined>()
-  const { data: dataUsersOfChatroom } = useQuery<GetUserOfChatroomQuery>(GET_USERS_OF_CHATROOM, {
+  const { data: chatroomData} = useQuery<GetChatroomDetailsQuery>(GET_CHATROOM_DETAILS, {
     variables: {
       chatroomId: chatroomId
     }
   })
-  useEffect(() => {
-    setIsUserPartOfChatroom(() => dataUsersOfChatroom?.getUsersOfChatroom.some((u) => u.id == userId))
-  }, [dataUsersOfChatroom?.getUsersOfChatroom, userId])
+
   useEffect(() => {
     handleEnter()
     if (liveUsersData?.liveUsersInChatroom) {
       setLiveUsers(liveUsersData.liveUsersInChatroom)
-      setIsUserPartOfChatroom(() =>
-        dataUsersOfChatroom?.getUsersOfChatroom.some((u) => u.id === userId)
-      )
     }
     return () => {
       handleLeave()
@@ -269,7 +256,7 @@ function ChatWindow() {
       w={isSmallDevice ? 'calc(100vw - 100px)' : '1000px'}
       h={'100vh'}
     >
-      {!liveUsersLoading && isUserPartOfChatroom ? (
+      {!liveUsersLoading? (
         <Card withBorder shadow='md' p={0} w={'100%'}>
           <Flex direction={'column'} pos={'relative'} h={'100%'} w={'100%'}>
             <Flex direction={'column'} bg={'#f1f1f0'}>
@@ -283,9 +270,9 @@ function ChatWindow() {
                   <Text mb={'xs'} c={'dimmed'} italic>
                     Chat with
                   </Text>
-                  {dataUsersOfChatroom?.getUsersOfChatroom && (
-                    <OverlappingAvatar users={dataUsersOfChatroom.getUsersOfChatroom} />
-                  )}
+                  <Text mb={'xs'} size={30} c={'dark'} italic>
+                    {chatroomData?.getChatroom.name}
+                  </Text>
                 </Flex>
                 <Flex
                   direction={'column'}

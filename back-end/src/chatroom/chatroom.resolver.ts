@@ -11,7 +11,7 @@ import { UserService } from 'src/user/user.service';
 import { Inject, UseFilters, UseGuards } from '@nestjs/common';
 import { GraphQLErrorFilter } from 'src/filters/custom-exception.filter';
 import { GraphqlAuthGurad } from 'src/auth/graphql.auth.guard';
-import { Chatroom, Message } from './chatroom.types';
+import { Chatroom, Message, UserActivity } from './chatroom.types';
 import { Request } from 'express';
 import { PubSub } from 'graphql-subscriptions';
 import { User } from 'src/user/user.type';
@@ -34,11 +34,11 @@ export class ChatroomResolver {
     return this.pubSub.asyncIterableIterator(`userLeaveChatGroup.${chatroomId}`)
   }
 
-  @Subscription(()=>User,{
+  @Subscription(()=>[User],{
     nullable:true,
-    resolve:(value)=>value.user,
+    resolve:(value)=>value.addedUsers,
     filter:(payload,variables)=>{
-      return payload.chatroomUsers.includes(variables.userId);
+      return payload.chatroomUsersIds.includes(variables.userId);
     }
   })
   userIsAddedToChatGroup(@Args('userId') userId:number){
@@ -111,6 +111,7 @@ export class ChatroomResolver {
   async sendMessage(
     @Args('chatroomId') chatroomId: number,
     @Args('content') content: string,
+    @Args('systemMessage', { type: () => Boolean, nullable: true }) systemMessage: boolean = false,
     @Context() context: { req: Request },
     @Args('image', { type: () => GraphQLUpload, nullable: true })
     image: FileUpload,
@@ -126,6 +127,7 @@ export class ChatroomResolver {
         content,
         context.req.user.sub,
         imagePath,
+        systemMessage,
       );
       const res = await this.pubSub.publish(`newMessage.${chatroomId}`, {
         newMessage,
@@ -153,18 +155,23 @@ export class ChatroomResolver {
     const result = await this.chatroomService.addUsersToChatroom(chatroomId, userIds);
 
     const chatroom = await this.chatroomService.getChatroom(chatroomId);
-    const chatroomUsers = chatroom.users.map(user => user.id); 
-  
-    for (const chatUserId of chatroomUsers) {
+    const chatroomUsersIds = chatroom.users.map(user => user.id); 
+    const addedUsers=await this.userService.getUserByIds(userIds)
+    for (const chatUserId of chatroomUsersIds) {
       await this.pubSub.publish(`userIsAddedToChatGroup.${chatUserId}`, {
-        addedUserIds: userIds, 
-        chatroomUsers, 
-        chatroom, 
+        addedUsers,
+        chatroomUsersIds, 
       });
     }
-  
     return result;
   }
+
+
+  @Query(() => Chatroom)
+  async getChatroom(@Args('chatroomId') chatroomId: number) {
+    return this.chatroomService.getChatroom(chatroomId);
+  }
+  
   @Query(() => [Chatroom])
   async getChatroomsForUser(@Args('userId') userId: number) {
     return this.chatroomService.getChatroomForUser(userId);

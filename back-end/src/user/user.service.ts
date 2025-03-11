@@ -50,6 +50,15 @@ export class UserService {
             },
         })
     }
+    async getUserByIds(ids:number[]){
+        return this.prisma.user.findMany({
+            where: {
+                id: {
+                    in: ids, 
+                },
+            },
+        });
+    }
     async getUsersOfChatroom(chatroomId:number){
         return this.prisma.user.findMany({
             where:{

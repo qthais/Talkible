@@ -7,6 +7,7 @@ export const NEW_MESSAGE_SUBSCRIPTION = gql`
       content
       imageUrl
       createdAt
+      systemMessage
       user {
         id
         fullname

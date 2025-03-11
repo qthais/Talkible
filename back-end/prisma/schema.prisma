@@ -45,4 +45,5 @@ model Message{
   updatedAt DateTime @updatedAt
   user User @relation(fields: [userId],references: [id], onDelete: Cascade)
   chatroom Chatroom @relation(fields: [chatroomId],references: [id],onDelete: Cascade)
+  systemMessage Boolean @default(false) 
 }

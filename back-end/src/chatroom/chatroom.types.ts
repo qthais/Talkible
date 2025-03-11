@@ -33,6 +33,8 @@ export class Message{
     chatroom?:Chatroom
     @Field(()=>User,{nullable:true})
     user:User
+    @Field(() => Boolean, { nullable: true }) // ✅ Add this line
+    systemMessage?: boolean;
 }
 @ObjectType()
 export class UserTyping{
@@ -44,3 +46,8 @@ export class UserTyping{
 
 @ObjectType()
 export class UserStopTyping extends UserTyping{}
+@ObjectType()
+export class UserActivity extends User{
+    @Field({nullable:true})
+    activity:string
+}
