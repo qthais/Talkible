@@ -21,7 +21,10 @@ import MessageBubble from './MessageBubble'
 import { IconMessage, IconLibraryPhoto, IconMichelinBibGourmand } from '@tabler/icons-react'
 import { GET_CHATROOMS_FOR_USER } from '../graphql/queries/getChatroomsForUser'
 import { NEW_MESSAGE_SUBSCRIPTION } from '../graphql/subscriptions/NewMessage'
+import { useChatStore } from '../stores/chatStore'
 function ChatWindow() {
+
+  const { setNewMessageReceived } = useChatStore();
   const [messageContent, setMessageContent] = useState('')
   const [sendMessage, { data: sendMessageData }] = useMutation<SendMessageMutation>(SEND_MESSAGE)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -237,7 +240,7 @@ function ChatWindow() {
       scrollToBottom()
     }
   }, [data?.getMessagesForChatroom])
-  
+
   const {
     data: dataSub,
     loading: loadingSub,
@@ -245,7 +248,10 @@ function ChatWindow() {
   } = useSubscription<NewMessageSubscription>(NEW_MESSAGE_SUBSCRIPTION, {
     variables: {
       chatroomId
-    }
+    },
+    onData: () => {
+      setNewMessageReceived(true); 
+    },
   })
   useEffect(() => {
     scrollToBottom()
@@ -409,10 +415,10 @@ function ChatWindow() {
                     <input {...getInputProps()} />
                   </Flex>
                   <TextInput
-                  
+
                     mr={30}
                     radius={10}
-                    onKeyDown={(e)=>{
+                    onKeyDown={(e) => {
                       handleUserStartedTyping()
                       if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault(); // Prevent line break

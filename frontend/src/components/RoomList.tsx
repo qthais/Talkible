@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useGeneralStore } from '../stores/generalStore'
 import { useMediaQuery } from '@mantine/hooks';
 import { useUserStore } from '../stores/userStore'
@@ -17,9 +17,11 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { USER_LEAVE_CHAT_GROUP } from '../graphql/subscriptions/UserLeaveChatGroup';
 import { USER_IS_ADDED } from '../graphql/subscriptions/AddUser';
+import { useChatStore } from '../stores/chatStore';
 
 dayjs.extend(relativeTime);
 function RoomList() {
+  const { newMessageReceived, setNewMessageReceived } = useChatStore();
   const toggleCreateRoomModal = useGeneralStore((state) => state.toggleCreateRoomModal)
   const userId = useUserStore((state) => state.id)
   const navigate = useNavigate()
@@ -77,6 +79,12 @@ function RoomList() {
       navigate('/')
     }
   })
+  useEffect(() => {
+    if (newMessageReceived) {
+      refetch();
+      setNewMessageReceived(false); // ✅ Reset flag after refetch
+    }
+  }, [newMessageReceived]);
   return (
     <Flex
       direction={"row"}
