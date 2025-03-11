@@ -23,6 +23,28 @@ export class ChatroomResolver {
     private readonly chatroomService: ChatroomService,
     private readonly userService: UserService,
   ) {}
+  @Subscription(()=>User,{
+    nullable:true,
+    resolve:(value)=>value.user,
+    filter:(payload,variables)=>{
+      return payload.leavingUserId !== variables.userId;
+    }
+  })
+  userLeaveChatGroup(@Args('chatroomId') chatroomId:number,@Args('userId') userId:number){
+    return this.pubSub.asyncIterableIterator(`userLeaveChatGroup.${chatroomId}`)
+  }
+
+  @Subscription(()=>User,{
+    nullable:true,
+    resolve:(value)=>value.user,
+    filter:(payload,variables)=>{
+      return payload.chatroomUsers.includes(variables.userId);
+    }
+  })
+  userIsAddedToChatGroup(@Args('userId') userId:number){
+    return this.pubSub.asyncIterableIterator(`userIsAddedToChatGroup.${userId}`)
+  }
+
   @Subscription(() => Message, {
     nullable: true,
     resolve: (value) => ({
@@ -128,7 +150,20 @@ export class ChatroomResolver {
     @Args('chatroomId') chatroomId: number,
     @Args('userIds', { type: () => [Number] }) userIds: number[],
   ) {
-    return this.chatroomService.addUsersToChatroom(chatroomId, userIds);
+    const result = await this.chatroomService.addUsersToChatroom(chatroomId, userIds);
+
+    const chatroom = await this.chatroomService.getChatroom(chatroomId);
+    const chatroomUsers = chatroom.users.map(user => user.id); 
+  
+    for (const chatUserId of chatroomUsers) {
+      await this.pubSub.publish(`userIsAddedToChatGroup.${chatUserId}`, {
+        addedUserIds: userIds, 
+        chatroomUsers, 
+        chatroom, 
+      });
+    }
+  
+    return result;
   }
   @Query(() => [Chatroom])
   async getChatroomsForUser(@Args('userId') userId: number) {
@@ -147,6 +182,11 @@ export class ChatroomResolver {
   @Mutation(()=>String)
   async leaveGroup(@Args('chatroomId') chatroomId: number,@Context() context: { req: Request }) {
     await this.chatroomService.leaveGroup(chatroomId,context.req.user.sub)
+    const user = await this.userService.getUser(context.req.user.sub);
+    await this.pubSub.publish(`userLeaveChatGroup.${chatroomId}`,{
+      user,
+      leavingUserId:context.req.user.sub
+    })
     return 'Leave successfully!';
   }
 }

@@ -32,8 +32,10 @@ type Documents = {
     "\n  query AuthCheck {\n    authCheck {\n        username\n        sub\n    }\n  }\n": typeof types.AuthCheckDocument,
     "\n query getChatroomsForUser($userId:Float!){\n    getChatroomsForUser(userId:$userId){\n        id\n        name\n        messages{\n            id\n            content\n            createdAt\n            user{\n                id\n                fullname\n            }\n        }\n        users{\n            avatarUrl\n            id\n            fullname\n            email\n        }\n    }\n\n }\n": typeof types.GetChatroomsForUserDocument,
     "\n    query getMessagesForChatroom($chatroomId:Float!){\n        getMessagesForChatroom(chatroomId:$chatroomId){\n            id\n            content\n            imageUrl\n            createdAt\n            user{\n                id\n                fullname\n                email\n                avatarUrl\n            }\n            chatroom{\n                id\n                name\n                users{\n                    id\n                    fullname\n                    email\n                    avatarUrl\n                }\n            }\n        }\n    }\n": typeof types.GetMessagesForChatroomDocument,
+    "\n  subscription UserIsAdded($userId: Float!) {\n    userIsAddedToChatGroup(userId: $userId) {\n        id\n        fullname\n        avatarUrl\n        email\n    }\n  }\n": typeof types.UserIsAddedDocument,
     "\n    subscription liveUsersInChatRoom($chatroomId:Float!){\n        liveUsersInChatroom(chatroomId:$chatroomId){\n            id\n            fullname\n            avatarUrl\n            email\n        }\n    }\n": typeof types.LiveUsersInChatRoomDocument,
     "\n  subscription NewMessage($chatroomId: Float!) {\n    newMessage(chatroomId: $chatroomId) {\n      id\n      content\n      imageUrl\n      createdAt\n      user {\n        id\n        fullname\n        email\n        avatarUrl\n      }\n    }\n  }\n": typeof types.NewMessageDocument,
+    "\n  subscription UserLeaveChatGroup($chatroomId: Float!,$userId:Float!) {\n    userLeaveChatGroup(chatroomId: $chatroomId,userId:$userId) {\n        id\n        fullname\n        avatarUrl\n        email\n    }\n  }\n": typeof types.UserLeaveChatGroupDocument,
     "\n    subscription userStartedTyping($chatroomId:Float!,$userId:Float!){\n        userStartedTyping(chatroomId:$chatroomId,userId:$userId){\n            id\n            fullname\n            email\n            avatarUrl\n        }\n    }\n": typeof types.UserStartedTypingDocument,
     "\n    subscription userStoppedTyping($chatroomId:Float!,$userId:Float!){\n        userStoppedTyping(chatroomId:$chatroomId,userId:$userId){\n            id\n            fullname\n            email\n            avatarUrl\n        }\n    }\n": typeof types.UserStoppedTypingDocument,
 };
@@ -56,8 +58,10 @@ const documents: Documents = {
     "\n  query AuthCheck {\n    authCheck {\n        username\n        sub\n    }\n  }\n": types.AuthCheckDocument,
     "\n query getChatroomsForUser($userId:Float!){\n    getChatroomsForUser(userId:$userId){\n        id\n        name\n        messages{\n            id\n            content\n            createdAt\n            user{\n                id\n                fullname\n            }\n        }\n        users{\n            avatarUrl\n            id\n            fullname\n            email\n        }\n    }\n\n }\n": types.GetChatroomsForUserDocument,
     "\n    query getMessagesForChatroom($chatroomId:Float!){\n        getMessagesForChatroom(chatroomId:$chatroomId){\n            id\n            content\n            imageUrl\n            createdAt\n            user{\n                id\n                fullname\n                email\n                avatarUrl\n            }\n            chatroom{\n                id\n                name\n                users{\n                    id\n                    fullname\n                    email\n                    avatarUrl\n                }\n            }\n        }\n    }\n": types.GetMessagesForChatroomDocument,
+    "\n  subscription UserIsAdded($userId: Float!) {\n    userIsAddedToChatGroup(userId: $userId) {\n        id\n        fullname\n        avatarUrl\n        email\n    }\n  }\n": types.UserIsAddedDocument,
     "\n    subscription liveUsersInChatRoom($chatroomId:Float!){\n        liveUsersInChatroom(chatroomId:$chatroomId){\n            id\n            fullname\n            avatarUrl\n            email\n        }\n    }\n": types.LiveUsersInChatRoomDocument,
     "\n  subscription NewMessage($chatroomId: Float!) {\n    newMessage(chatroomId: $chatroomId) {\n      id\n      content\n      imageUrl\n      createdAt\n      user {\n        id\n        fullname\n        email\n        avatarUrl\n      }\n    }\n  }\n": types.NewMessageDocument,
+    "\n  subscription UserLeaveChatGroup($chatroomId: Float!,$userId:Float!) {\n    userLeaveChatGroup(chatroomId: $chatroomId,userId:$userId) {\n        id\n        fullname\n        avatarUrl\n        email\n    }\n  }\n": types.UserLeaveChatGroupDocument,
     "\n    subscription userStartedTyping($chatroomId:Float!,$userId:Float!){\n        userStartedTyping(chatroomId:$chatroomId,userId:$userId){\n            id\n            fullname\n            email\n            avatarUrl\n        }\n    }\n": types.UserStartedTypingDocument,
     "\n    subscription userStoppedTyping($chatroomId:Float!,$userId:Float!){\n        userStoppedTyping(chatroomId:$chatroomId,userId:$userId){\n            id\n            fullname\n            email\n            avatarUrl\n        }\n    }\n": types.UserStoppedTypingDocument,
 };
@@ -151,11 +155,19 @@ export function graphql(source: "\n    query getMessagesForChatroom($chatroomId:
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  subscription UserIsAdded($userId: Float!) {\n    userIsAddedToChatGroup(userId: $userId) {\n        id\n        fullname\n        avatarUrl\n        email\n    }\n  }\n"): (typeof documents)["\n  subscription UserIsAdded($userId: Float!) {\n    userIsAddedToChatGroup(userId: $userId) {\n        id\n        fullname\n        avatarUrl\n        email\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n    subscription liveUsersInChatRoom($chatroomId:Float!){\n        liveUsersInChatroom(chatroomId:$chatroomId){\n            id\n            fullname\n            avatarUrl\n            email\n        }\n    }\n"): (typeof documents)["\n    subscription liveUsersInChatRoom($chatroomId:Float!){\n        liveUsersInChatroom(chatroomId:$chatroomId){\n            id\n            fullname\n            avatarUrl\n            email\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  subscription NewMessage($chatroomId: Float!) {\n    newMessage(chatroomId: $chatroomId) {\n      id\n      content\n      imageUrl\n      createdAt\n      user {\n        id\n        fullname\n        email\n        avatarUrl\n      }\n    }\n  }\n"): (typeof documents)["\n  subscription NewMessage($chatroomId: Float!) {\n    newMessage(chatroomId: $chatroomId) {\n      id\n      content\n      imageUrl\n      createdAt\n      user {\n        id\n        fullname\n        email\n        avatarUrl\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  subscription UserLeaveChatGroup($chatroomId: Float!,$userId:Float!) {\n    userLeaveChatGroup(chatroomId: $chatroomId,userId:$userId) {\n        id\n        fullname\n        avatarUrl\n        email\n    }\n  }\n"): (typeof documents)["\n  subscription UserLeaveChatGroup($chatroomId: Float!,$userId:Float!) {\n    userLeaveChatGroup(chatroomId: $chatroomId,userId:$userId) {\n        id\n        fullname\n        avatarUrl\n        email\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

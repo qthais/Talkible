@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useGeneralStore } from '../stores/generalStore'
 import { Button, Group,  Modal, MultiSelect,  Stepper,  TextInput } from '@mantine/core'
 import { useMutation, useQuery } from '@apollo/client'
@@ -10,11 +10,12 @@ import { ADD_USERS_TO_CHATROOM } from '../graphql/mutations/AddUsersToChatroom'
 import { IconPlus } from '@tabler/icons-react'
 
 
-function AddChatroom() {
-    const [active, setActive] = useState(1)
+function AddChatroom({ chatroomId }: { chatroomId?: number }) {
+    const [active, setActive] = useState(chatroomId ? 2 : 1);
     const [highestStepVisited, setHighestStepVisited] = useState(active)
     const isCreateRoomModalOpen = useGeneralStore((state) => state.isCreateRoomModalOpen)
     const toggleCreateRoomModal = useGeneralStore((state) => state.toggleCreateRoomModal)
+    const closeCreateRoomModal=useGeneralStore((state)=>state.closeCreateRoomModal)
     const handleStepChange = (nextStep: number) => {
         const isOutOfBounds = nextStep > 2 || nextStep < 0
         if (isOutOfBounds) {
@@ -63,12 +64,12 @@ function AddChatroom() {
     const handleAddUsersToChatroom = async () => {
         await addUsersToChatroom({
             variables: {
-                chatroomId: newlyCreatedChatroom?.id && parseInt(newlyCreatedChatroom?.id),
+                chatroomId: chatroomId ? chatroomId : newlyCreatedChatroom?.id ? parseInt(newlyCreatedChatroom.id) : null                ,
                 userIds: selectedUsers.map((userId) => parseInt(userId))
             },
             onCompleted: () => {
                 handleStepChange(1)
-                toggleCreateRoomModal()
+                closeCreateRoomModal()
                 setSelectedUsers([])
                 setNewlyCreatedChatroom(null)
                 form.reset()
@@ -96,9 +97,12 @@ function AddChatroom() {
         label: user.fullname,
         value: String(user.id)
     })) || []
-
+    useEffect(() => {
+        console.log(chatroomId)
+        setActive(chatroomId ? 2 : 1);
+      }, [chatroomId]);
     return (
-        <Modal opened={isCreateRoomModalOpen} onClose={toggleCreateRoomModal}>
+        <Modal opened={isCreateRoomModalOpen} onClose={closeCreateRoomModal}>
             <Stepper
                 active={active}
                 onStepClick={setActive}

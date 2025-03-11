@@ -7,7 +7,9 @@ interface GeneralState{
     isCreateRoomModalOpen:boolean,
     toggleProfileSettingsModal:()=>void
     toggleLoginModal:()=>void
-    toggleCreateRoomModal:()=>void
+    toggleCreateRoomModal: (chatroomId?: number | null) => void;
+    closeCreateRoomModal:()=>void
+    chatroomId: number | null;
 }
 
 export const useGeneralStore= create<GeneralState>()(
@@ -16,6 +18,7 @@ export const useGeneralStore= create<GeneralState>()(
             isProfileSettingsModalOpen:false,
             isLoginModalOpen:false,
             isCreateRoomModalOpen:false,
+            chatroomId: null,
             toggleProfileSettingsModal:()=>{
                 set((state)=>({
                     isProfileSettingsModalOpen:!state.isProfileSettingsModalOpen
@@ -23,14 +26,21 @@ export const useGeneralStore= create<GeneralState>()(
             },
             toggleLoginModal:()=>{
                 set((state)=>({
-                    isLoginModalOpen:!state.isLoginModalOpen
+                    isLoginModalOpen:!state.isLoginModalOpen,
                 }))
             },
-            toggleCreateRoomModal:()=>{
+            toggleCreateRoomModal:(chatroomId = null)=>{
                 set((state)=>({
-                    isCreateRoomModalOpen:!state.isCreateRoomModalOpen
+                    isCreateRoomModalOpen:!state.isCreateRoomModalOpen,
+                    chatroomId
                 }))
-            }
+            },
+            closeCreateRoomModal: () => {
+                set(() => ({
+                    isCreateRoomModalOpen: false,
+                    chatroomId: null, // ✅ Reset chatroomId when closing modal
+                }));
+            },
         }),
         {
             name: 'general-store'

@@ -2,19 +2,21 @@ import React, { useState } from 'react'
 import { useGeneralStore } from '../stores/generalStore'
 import { useMediaQuery } from '@mantine/hooks';
 import { useUserStore } from '../stores/userStore'
-import { useMutation, useQuery } from '@apollo/client'
+import { useMutation, useQuery, useSubscription } from '@apollo/client'
 import { GET_CHATROOMS_FOR_USER } from '../graphql/queries/getChatroomsForUser'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Card, Flex, Group, Loader, ScrollArea, Text } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
+import { IconPlus, IconUsersPlus } from '@tabler/icons-react';
 import OverlappingAvatar from './OverlappingAvatar';
-import { GetChatroomsForUserQuery, LeaveGroupMutation } from '../gql/graphql';
+import { GetChatroomsForUserQuery, LeaveGroupMutation, UserIsAddedSubscription, UserLeaveChatGroupSubscription } from '../gql/graphql';
 import { LEAVE_GROUP } from '../graphql/mutations/LeaveGroup';
 import {
   IconLogout,
 } from "@tabler/icons-react"
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { USER_LEAVE_CHAT_GROUP } from '../graphql/subscriptions/UserLeaveChatGroup';
+import { USER_IS_ADDED } from '../graphql/subscriptions/AddUser';
 
 dayjs.extend(relativeTime);
 function RoomList() {
@@ -31,13 +33,34 @@ function RoomList() {
   const defaultFlexStyle: React.CSSProperties = {
     maxWidth: isSmallDevice ? 'unset' : '200px'
   }
-  const { data, loading, error } = useQuery<GetChatroomsForUserQuery>(
+  const { data, loading, error, refetch } = useQuery<GetChatroomsForUserQuery>(
     GET_CHATROOMS_FOR_USER,
     {
       variables: {
         userId: userId
       }
     })
+
+  const { data: addUserData } = useSubscription<UserIsAddedSubscription>(USER_IS_ADDED, {
+    variables: {
+      userId
+    },
+    onData: (testData) => {
+      console.log(testData)
+      refetch()
+    }
+  })
+  const { data: leaveUserData } = useSubscription<UserLeaveChatGroupSubscription>(USER_LEAVE_CHAT_GROUP, {
+    variables: {
+      chatroomId: activeRoomId,
+      userId: userId
+    },
+    onData: (userLeaveData) => {
+      console.log(userLeaveData)
+      refetch()
+    },
+  })
+
   const [leaveGroup] = useMutation<LeaveGroupMutation>(LEAVE_GROUP, {
     variables: {
       chatroomId: activeRoomId
@@ -64,7 +87,7 @@ function RoomList() {
       <Card radius={'lg'} w={"100%"} p={0}>
         <Flex direction={'column'} align={'start'} w={'100%'}>
           <Group position='apart' w={'100%'} style={{ width: "100%" }} mb={'md'} mt={'md'}>
-            <Button onClick={toggleCreateRoomModal} variant='light' leftIcon={<IconPlus />}>
+            <Button onClick={()=>toggleCreateRoomModal(null)} variant='light' leftIcon={<IconPlus />}>
               Create a room
             </Button>
           </Group>
@@ -150,7 +173,20 @@ function RoomList() {
                           </Flex>
                         )
                         }
-                        <Flex h={'100%'} align={'end'} justify={'end'}>
+                        <Flex h={'100%'} direction={'column'} gap={10} align={'space-between'} justify={'space-between'}>
+                          <Button
+                            key={chatroom.id}
+                            p={0}
+                            variant='light'
+                            color='blue'
+                            onClick={(e) => {
+                              e.preventDefault()
+                              console.log('chatroomId: ',chatroom.id)
+                              toggleCreateRoomModal(parseInt(chatroom.id!))
+                            }}
+                          >
+                            <IconUsersPlus />
+                          </Button>
                           <Button
                             p={0}
                             variant='light'
@@ -162,6 +198,7 @@ function RoomList() {
                           >
                             <IconLogout />
                           </Button>
+
                         </Flex>
                       </Flex>
                     </Card>

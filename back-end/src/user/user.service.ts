@@ -65,6 +65,8 @@ export class UserService {
         return this.prisma.user.findUnique({
             where:{
                 id:userId
+            },include:{
+                chatrooms:true
             }
         })
     }

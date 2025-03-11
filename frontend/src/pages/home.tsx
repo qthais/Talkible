@@ -8,7 +8,9 @@ import Sidebar from '../components/Sidebar'
 import MainLayout from '../layouts/MainLayout'
 import AddChatroom from '../components/AddChatroom'
 import { Outlet } from 'react-router-dom'
+import { useGeneralStore } from '../stores/generalStore'
 function Home() {
+  const chatroomId = useGeneralStore((state) => state.chatroomId); // 
   return (
     <MainLayout>
       <>
@@ -16,7 +18,7 @@ function Home() {
         <ProfileSetting/>
         <Sidebar />
         <ProtectRoutes>
-          <AddChatroom/>
+          <AddChatroom chatroomId={chatroomId!}/>
           <Flex direction={{base:"column",sm:"row"}} w={"100vw"}>
           <RoomList/>
           <Outlet/>
