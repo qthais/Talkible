@@ -19,7 +19,7 @@ function Home() {
         <Sidebar />
         <ProtectRoutes>
           <AddChatroom chatroomId={chatroomId!}/>
-          <Flex direction={{base:"column",sm:"row"}} w={"100vw"}>
+          <Flex direction={{base:"column",md:"row"}} w={"100vw"}>
           <RoomList/>
           <Outlet/>
           </Flex>

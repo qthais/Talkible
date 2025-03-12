@@ -28,7 +28,6 @@ export class LiveChatroomService {
     ):Promise<void>{
         try{
         const res=await this.redisClient.srem(`liveUsers:chatroom:${chatroomId}`,JSON.stringify(user))
-        console.log('removeLiveUserFromChatroom res',res)
         }catch(err){
             console.log('removeLiveUserFromChatroom error',err)
         }

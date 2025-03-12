@@ -21,7 +21,7 @@ import { GET_CHATROOMS_FOR_USER } from '../graphql/queries/getChatroomsForUser'
 import { NEW_MESSAGE_SUBSCRIPTION } from '../graphql/subscriptions/NewMessage'
 import { useChatStore } from '../stores/chatStore'
 import { GET_CHATROOM_DETAILS } from '../graphql/queries/GetChatRoom'
-function ChatWindow() {
+function ChatWindow({id}:{id:string}) {
 
   const { setNewMessageReceived } = useChatStore();
   const [messageContent, setMessageContent] = useState('')
@@ -36,7 +36,7 @@ function ChatWindow() {
     }
   })
   const previewUrl = selectedFile ? URL.createObjectURL(selectedFile) : null
-  const { id } = useParams<{ id: string }>()
+  // const { id } = useParams<{ id: string }>()
   const userId = useUserStore((state) => state.id)
   const {
     data: typingData,
@@ -130,9 +130,6 @@ function ChatWindow() {
   const handleEnter = async () => {
     try {
       const res = await enterChatroom({ variables: { chatroomId } })
-      if (res.data?.enterChatroom) {
-        console.log('Successfully entered chatroom!')
-      }
     } catch (err) {
       console.log('Error entering chatroom', err)
     }
@@ -140,9 +137,6 @@ function ChatWindow() {
   const handleLeave = async () => {
     try {
       const res = await leaveChatroom({ variables: { chatroomId } })
-      if (res.data?.leaveChatroom) {
-        console.log('Successfully leaving chatroom!')
-      }
     } catch (err) {
       console.log('Error leaving chatroom', err)
     }

@@ -45,7 +45,6 @@ function AddChatroom({ chatroomId }: { chatroomId?: number }) {
                 name: form.values.name
             },
             onCompleted: (data) => {
-                console.log(data)
                 setNewlyCreatedChatroom(data.createChatroom)
                 handleStepChange(active + 1)
             },
@@ -61,10 +60,7 @@ function AddChatroom({ chatroomId }: { chatroomId?: number }) {
     const [searchTerm, setSearchTerm] = useState('')
     const [sendMessage, { data: sendMessageData }] = useMutation<SendMessageMutation>(SEND_MESSAGE)
     const { data, refetch } = useQuery<SearchUsersQuery>(SEARCH_USER, {
-        variables: { fullname: searchTerm },
-        onCompleted:(dataSearch)=>{
-            console.log(dataSearch)
-        }
+        variables: { fullname: searchTerm }
     })
     const [addUsersToChatroom, { data:chatroomData }] = useMutation<AddUsersToChatroomMutation>(ADD_USERS_TO_CHATROOM, {
         refetchQueries: ['getChatroomsForUser'],
@@ -133,7 +129,6 @@ function AddChatroom({ chatroomId }: { chatroomId?: number }) {
         value: String(user.id)
     })) || []
     useEffect(() => {
-        console.log(chatroomId)
         setActive(chatroomId ? 2 : 1);
     }, [chatroomId]);
     return (
@@ -168,7 +163,6 @@ function AddChatroom({ chatroomId }: { chatroomId?: number }) {
                         label='Choose the members you want to add'
                         placeholder='Pick all the users'
                         onChange={(values) => {
-                            console.log(values)
                             setSelectedUsers(values)
                         }}
                     />

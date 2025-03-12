@@ -10,7 +10,7 @@ function JoinRoomOnWindow() {
         if(!id){
             setContent('Please choose a room')
         }else{
-            setContent(<ChatWindow/>)
+            setContent(<ChatWindow id={id}/>)
         }
     },[setContent,id])
   return (

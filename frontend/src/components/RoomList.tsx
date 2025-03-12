@@ -62,8 +62,7 @@ function RoomList() {
       chatroomId: activeRoomId,
       userId: userId
     },
-    onData: (userLeaveData) => {
-      console.log(userLeaveData)
+    onData: () => {
       refetch()
     },
   })
