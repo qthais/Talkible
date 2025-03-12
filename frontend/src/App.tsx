@@ -8,6 +8,7 @@ import { LoadingOverlay } from '@mantine/core';
 import { useGeneralStore } from './stores/generalStore.ts';
 import { AuthCheckQuery } from './gql/graphql.ts';
 import { useUserStore } from './stores/userStore.ts';
+import { Toaster } from "react-hot-toast";
 export default function App() {
     const toggleModalLogin = useGeneralStore((state) => state.toggleLoginModal);
     const setUser=useUserStore((state)=>state.setUser)
@@ -31,6 +32,7 @@ export default function App() {
         )
     }
     return (
+        <>
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Home />}>
@@ -38,5 +40,8 @@ export default function App() {
                 </Route>
             </Routes>
         </BrowserRouter>
+        <Toaster/>
+        </>
+        
     );
 }

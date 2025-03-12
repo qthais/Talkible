@@ -11,6 +11,7 @@ import { IconPlus } from '@tabler/icons-react'
 import { SEND_MESSAGE } from '../graphql/mutations/sendMessages'
 import { useUserStore } from '../stores/userStore'
 import { GET_CHATROOMS_FOR_USER } from '../graphql/queries/getChatroomsForUser'
+import toast from 'react-hot-toast'
 
 
 function AddChatroom({ chatroomId }: { chatroomId?: number }) {
@@ -45,6 +46,7 @@ function AddChatroom({ chatroomId }: { chatroomId?: number }) {
                 name: form.values.name
             },
             onCompleted: (data) => {
+                toast.success('Create chatroom successfully!')
                 setNewlyCreatedChatroom(data.createChatroom)
                 handleStepChange(active + 1)
             },
@@ -73,6 +75,7 @@ function AddChatroom({ chatroomId }: { chatroomId?: number }) {
                 userIds: selectedUsers.map((userId) => parseInt(userId))
             },
             onCompleted: () => {
+                toast.success('Successfully add members to the room!')
                 handleStepChange(1)
                 handleSendMessage('join')
                 closeCreateRoomModal()

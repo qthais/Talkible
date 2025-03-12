@@ -7,6 +7,7 @@ import { useMutation } from '@apollo/client'
 import { isEmail, useForm } from '@mantine/form'
 import { REGISTER_USER } from '../graphql/mutations/Register'
 import { LOGIN_USER } from '../graphql/mutations/Login'
+import toast from 'react-hot-toast'
 function AuthOverlay() {
   const isLoginModalOpen = useGeneralStore((state) => state.isLoginModalOpen)
   const toggleLoginModal = useGeneralStore((state) => state.toggleLoginModal)
@@ -47,6 +48,7 @@ function AuthOverlay() {
           confirmPassword: form.values.confirmPassword
         },
         onCompleted: (data) => {
+          toast.success('Register successfully!')
           setErrors({})
           if (data?.register.user) {
             setUser({
@@ -156,6 +158,7 @@ function AuthOverlay() {
         },
         onCompleted: (data) => {
           setErrors({})
+          toast.success('Login success fully!')
           if (data?.login.user) {
             setUser({
               id: data?.login.user.id,

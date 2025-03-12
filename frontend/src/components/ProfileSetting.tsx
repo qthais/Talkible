@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useGeneralStore } from '../stores/generalStore'
 import { useUserStore } from '../stores/userStore'
 import { useForm } from '@mantine/form'
@@ -6,6 +6,7 @@ import { useMutation } from '@apollo/client'
 import { UPDATE_PROFILE } from '../graphql/mutations/updateUserProfile'
 import { Avatar, Button, FileInput, Flex, Group, Modal, TextInput } from '@mantine/core'
 import { IconEditCircle } from '@tabler/icons-react'
+import toast from 'react-hot-toast'
 
 function ProfileSetting() {
     const isProfileSettingModalOpen = useGeneralStore((state) => state.isProfileSettingsModalOpen)
@@ -19,7 +20,7 @@ function ProfileSetting() {
     const fileInputRef = useRef<HTMLButtonElement>(null)
     const form = useForm({
         initialValues: {
-            fullname,
+            fullname: fullname,
             profileImage,
         },
         validate: {
@@ -40,12 +41,19 @@ function ProfileSetting() {
         if(form.validate().hasErrors) return
         try{
             const result =await updateProfile()
-            console.log(result)
+            toast.success('You have updated successfully!')
             toggleProfileSettingModal()
         }catch(err){
+            toast.error(err.message)
             console.log(err)
         }
     }
+    useEffect(()=>{
+        form.setValues({
+            fullname,
+            profileImage,
+        })
+    },[fullname,profileImage])
     return (
         <Modal
             opened={isProfileSettingModalOpen}

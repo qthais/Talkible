@@ -20,6 +20,8 @@ import { useMutation } from '@apollo/client'
 import { LOGOUT_USER } from '../graphql/mutations/Logout'
 import { useGeneralStore } from '../stores/generalStore';
 import { useUserStore } from '../stores/userStore';
+import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 const useStyles = createStyles((theme) => {
   return {
     link: {
@@ -78,9 +80,9 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
     </Tooltip>
   )
 }
-
 const mockdata = [{ icon: IconBrandWechat, label: "Chatrooms" }]
 function Sidebar() {
+  const navigate=useNavigate()
   const toggleProfileSettingModal = useGeneralStore((state) => state.toggleProfileSettingsModal)
   const [active, setActive] = useState(0);
 
@@ -103,6 +105,8 @@ function Sidebar() {
   })
   const handleLogout = async () => {
     await logoutUser()
+    toast.success('Logout successfully!')
+    navigate('/')
     setUser({
       id: undefined,
       fullname: '',
