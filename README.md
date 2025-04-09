@@ -1,4 +1,4 @@
-# 💬 ChatSphere (Wait for production)
+# 💬 Talkible (Wait for production)
 ChatSphere is a **real-time messaging platform** that allows users to communicate seamlessly through **private and group chats**. It offers **media sharing, user authentication, and live user tracking** to enhance the messaging experience. The platform is built with modern web technologies to ensure a fast, secure, and interactive experience.
 
 ---
