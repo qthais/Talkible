@@ -56,6 +56,35 @@ Talkible is designed for users who want **instant ⚡, reliable 🛡️, and fea
 # Clone repository
 git clone https://github.com/qthais/Talkible.git
 ```
+---
+
+## 🧩 Environment Variables Setup
+
+You need to create `.env` files for both the **backend** and **frontend** to connect services properly.
+
+---
+
+### 🔐 Backend `.env`
+
+Create a file named `.env` inside the `Talkible/backend` directory with the following content:
+
+```env
+DATABASE_URL=postgresql://thainguyen:123456@localhost:5432/chatapp
+REFRESH_TOKEN_SECRET='mysecret'
+ACCESS_TOKEN_SECRET='mysecret'
+APP_URL=http://localhost:3000
+IMAGE_PATH=/images
+```
+### 🔐 Frontend `.env`
+
+Create a file named `.env` inside the `Talkible/frontend` directory with the following content:
+
+```env
+VITE_BASE_URL=http://localhost:3000
+```
+
+
+---
 ## 🖥️ Backend Setup ⚙️
 
 #### Step-by-Step:
