@@ -66,7 +66,7 @@ You need to create `.env` files for both the **backend** and **frontend** to con
 
 ### 🔐 Backend `.env`
 
-Create a file named `.env` inside the `Talkible/backend` directory with the following content:
+Create a file named `.env` inside the `Talkible/back-end` directory with the following content:
 
 ```env
 DATABASE_URL=postgresql://thainguyen:123456@localhost:5432/chatapp
@@ -91,7 +91,7 @@ VITE_BASE_URL=http://localhost:3000
 
 **1️⃣ Start containers (PostgreSQL + Redis)**
 ```bash
-cd Talkible/backend
+cd Talkible/back-end
 docker-compose up -d
 ```
 **2️⃣ Install dependencies**
